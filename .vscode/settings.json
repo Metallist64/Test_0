@@ -1,0 +1,27 @@
+{
+    "files.associations": {
+        "genesis.h": "c",
+        "object.h": "c",
+        "font.h": "c",
+        "string.h": "c",
+        "vdp.h": "c",
+        "resources.h": "c",
+        "sprite_eng.h": "c",
+        "vdp_spr.h": "c",
+        "gfx.h": "c",
+        "sprite_eng_legacy.h": "c",
+        "tools.h": "c",
+        "mapper.h": "c",
+        "sram.h": "c",
+        "sys.h": "c",
+        "pool.h": "c",
+        "map.h": "c",
+        "game_map.h": "c",
+        "level.h": "c",
+        "level_0.h": "c",
+        "camera.h": "c",
+        "player.h": "c",
+        "collisions.h": "c",
+        "common.h": "c"
+    }
+}
