@@ -36,6 +36,25 @@ typedef enum    _player_animation
     ANIM_SLEEP,
 } PlayerAnim_Typedef;
 
+typedef enum _player_jump
+{
+    JMP_RISE = 0,     
+    JMP_FALL,    
+} JumpStage_Typedef;
+
+typedef struct _jump
+{
+    uint16_t                allow;
+    uint16_t                maxHight;
+    uint16_t                hight;
+    uint16_t                step;
+    uint16_t                buttonReleased;
+    uint16_t                maxSpeed;
+    uint16_t                fallSpeed;
+    uint16_t                try;
+    JumpStage_Typedef       stage;
+}Jump_Typedef;
+
 typedef struct _player
 {
     const SpriteDefinition  *spriteDef;     // RawSprite reference
@@ -48,13 +67,16 @@ typedef struct _player
     RECT_Typedef            collisionRect;
     uint16_t                relaxTimer;
     uint16_t                health;
-    uint16_t                jump;
-
+    Jump_Typedef            jump;
+    uint16_t                state;
+    uint16_t                jumpPressed;
 }Player_Typedef;
 
 extern Player_Typedef player;
 
 void updatePlayerPosition(void);
 void drawPlayer(void);
+
+void playerJump(void);
 
 #endif

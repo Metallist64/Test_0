@@ -6,7 +6,7 @@
 #include "level_0.h"
 #include "resources.h"
 #include "player.h"
-
+#include "game.h"
 
 typedef enum
 {
@@ -85,7 +85,8 @@ int main(bool hardReset)
 
     while(1)
     {
-        updatePlayerPosition();     //Update player global position
+        game();
+        //updatePlayerPosition();     //Update player global position
         updatePlayerCamera();       //Calculate player screen position from global position on current map
         drawPlayer();
         

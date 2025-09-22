@@ -9,7 +9,7 @@ char strDbg[64];
 CollisionType_Typedef getCollision(const CollisionMap_Typedef *map, CollisionVec_Typedef CollisionVector)
 {
     uint16_t blockIdx               = 0;
-    uint8_t blockColided            = 0;
+    //uint8_t blockColided            = 0;
     uint8_t tmp                     = 0;
     CollisionType_Typedef result    = COLLISION_NOT_FOUND;
 
@@ -49,7 +49,19 @@ CollisionType_Typedef getCollision(const CollisionMap_Typedef *map, CollisionVec
             vertex[0].x -= 1;
             vertex[3].x -= 1;        
 
-            //result = COLLISION_LEFT;
+            // Check vertex 2
+            blockIdx = (vertex[0].y /map->gridStep) * map->width + vertex[0].x / map->gridStep;
+            tmp = *(map->data + blockIdx);
+
+            // Check vertex 3
+            blockIdx = (vertex[3].y /map->gridStep) * map->width + vertex[3].x / map->gridStep;
+            tmp += *(map->data + blockIdx);
+
+            if(tmp)
+            {
+                KDebug_Alert("Collision left.");
+                result = COLLISION_LEFT;
+            } 
         break;        
 
         case COLLISION_VECTOR_RIGHT:

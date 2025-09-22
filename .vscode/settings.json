@@ -22,6 +22,7 @@
         "camera.h": "c",
         "player.h": "c",
         "collisions.h": "c",
-        "common.h": "c"
+        "common.h": "c",
+        "kdebug.h": "c"
     }
 }
