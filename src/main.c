@@ -57,6 +57,7 @@ void TilesAnimationUpdate()
 Pool *objectPoolExplosin;
 char str_0[64];
 char str_1[64];
+char str_2[64];
 
 
 uint8_t blocNum = 0;
@@ -86,22 +87,16 @@ int main(bool hardReset)
     while(1)
     {
         game();
-        //updatePlayerPosition();     //Update player global position
-        updatePlayerCamera();       //Calculate player screen position from global position on current map
-        drawPlayer();
+       
         
         
-        //SPR_setAnim(player.sprite, ANIM_WALK);
-        //SPR_setHFlip(player.sprite, FALSE);
-        
-
-
         sprintf(str_0, "Camera X,Y = %04d, %04d", playerCamera.viewZone.left, playerCamera.viewZone.top);
         sprintf(str_1, "Position X,Y = %04d, %04d", player.globalPosition.x, player.globalPosition.y);
-        //sprintf(str_0, "Position X,Y,Block = %03d, %03d, %03d", STEP_AREA_WIDTH, STEP_AREA_HIGHT, blocNum);
+        sprintf(str_2, "Buttons = %05d", player.state);
 
         VDP_drawTextBG(BG_B, str_0, 0, 0);
         VDP_drawTextBG(BG_B, str_1, 0, 1);
+        VDP_drawTextBG(BG_B, str_2, 0, 2);
         
         SPR_update();
         SYS_doVBlankProcess();

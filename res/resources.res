@@ -5,7 +5,7 @@ MAP     res_map_0       "1 Level.png"   res_tileset_0 FAST 0
 PALETTE res_palette_0   "1 Level.png"
 SPRITE orange_goblin_sprite "Orange Goblin.png" 6 4 NONE 10
 #SPRITE player_sprite "Orange Goblin.png" 6 4 NONE 10
-SPRITE player_sprite "Ryan Normal.png" 8 6 NONE 10
+SPRITE player_sprite "Ryan Normal.png" 8 6 NONE 6
 #SPRITE player_sprite "sonic.png" 6 6 FAST 0
 TILESET animated_tileset_frame_0 "box.png" NONE NONE
 #TILESET animated_tileset_frame_1 "animated_tileset_frame_1.png" NONE NONE

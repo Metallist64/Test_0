@@ -19,7 +19,7 @@ typedef struct _camera
 
 extern Camera_Typedef playerCamera;
 
-void updatePlayerCamera(void);
+void updateCamera(void);
 
 
 #endif

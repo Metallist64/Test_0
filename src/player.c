@@ -15,206 +15,102 @@ Player_Typedef player =
     .animState              = ANIM_STAY,
     .screenPosition         = {0,0},
     .globalPosition         = {0,0},
-    .collisionRectOffset    =  {20,16},
+    .collisionRectOffset    = {20,16},
     .collisionRect          = {0,0,16,32},
     .relaxTimer             = 10,
     .health                 = 100,
-    .jump.allow             = false,
-    .jump.stage             = JMP_RISE,
-    .jump.step              = 1,
-    .jump.hight             = 0,    
-    .jump.maxHight          = 100,
-    .jump.fallSpeed         = 0,
-    .jump.buttonReleased    = true,
     .state                  = 0,
+    .jump.idx               = 0,
+    .jump.state             = JMP_AWAITING,
 };
 
-
-void playerJump(void);                 
-
-void updatePlayerPosition(void)
-{
-    /*
-    
-    
-    Vec2_Typedef newPosition = {player.globalPosition.x, player.globalPosition.y};
-    //PlayerDirection_Typedef newDirection = PLAYER_DIR_FORWARD;
-    CollisionType_Typedef collisionResult = COLLISION_NOT_FOUND;
-    uint16_t input = JOY_readJoypad(0);
-
-    switch (player.state)
-    {
-        case 0:
-
-            collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_DOWN);
-            
-            if((input & BUTTON_A) == BUTTON_A) player.state = 1;
-
-        break;
-
-        case 1:
-
-            playerJump();
-
-        break;        
-
-        case 2:
-
-            //playerWalk();
-        
-        break;    
-      
-    default:
-        break;
-    }
-
-     
-        
-   
-    if((input & BUTTON_A) == BUTTON_A)
-    {
-        if(player.jump.allow)
-        {
-            player.jump.allow = false;
-            player.jump.try = true;
-            player.jump.stage = JMP_RISE;
-        }
-        
-    }
-
-    if((input & BUTTON_RIGHT) == BUTTON_RIGHT)
-    {
-        if(newPosition.x < 5000)
-        {
-            collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_RIGHT);
-            if(collisionResult != COLLISION_RIGHT)
-            {
-                newPosition.x++;       
-            }
-            player.direction = PLAYER_DIR_FORWARD;
-        } 
-    }  
-
-    if((input & BUTTON_LEFT) == BUTTON_LEFT)
-    {
-        if(newPosition.x > 0)
-        {
-            collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_LEFT);
-            if(collisionResult != COLLISION_LEFT)
-            {
-                newPosition.x--;       
-            }
-            player.direction = PLAYER_DIR_BACKWARD;
-        } 
-    } 
-
-    else
-    {
-        //player.globalPosition.y = newPosition.y; 
-        //KDebug_Alert("No collisions");
-    }
-
-    player.globalPosition.x = newPosition.x;
-    player.globalPosition.y = newPosition.y;    
-    */
-}
-
-uint16_t jumpIdx = 0; 
-
-
-const uint16_t jumpArray[] = {2,2,2,2,2,2,2,2,
+const uint8_t jumpArray[] = {2,2,2,2,2,2,2,2,
                               2,2,2,2,2,2,2,2,
                               1,1,0,0,0,0,0,0};
 
-
-                              
-
-
-uint16_t positionYRound(uint16_t position) //Bound
+uint16_t roundYposition(uint16_t position) //Bound
 {
     uint16_t result = 0;
     uint16_t k = (position + 1) / 16;
     result = k * 16;
 
     return (result);
-
 }
-
-#define AWAITING_JUMP   0
-#define JUMP_RISE       1
-#define JUMP_FALL       2
-#define GRAVITY         3
-
-uint16_t jumpStage = AWAITING_JUMP; 
 
 void playerJump(void)
 {
     Vec2_Typedef newPosition = {player.globalPosition.x, player.globalPosition.y};
     CollisionType_Typedef collisionResult = COLLISION_NOT_FOUND;
     
-    {   switch (jumpStage)
-        {
+     switch (player.jump.state)
+     {
 
-            case AWAITING_JUMP:
+        case JMP_AWAITING_RELEASE_BUTTON:
+            if(!player.input.buttons.A)
+            {
+                player.jump.state = JMP_AWAITING;
+            }
+        break;
 
-                if(player.jumpPressed)
-                {
-                    jumpStage = JUMP_RISE;
-                    jumpIdx = 0;
+        case JMP_AWAITING:
+
+            if(player.input.buttons.A)
+            {
+                player.jump.state = JMP_RISE;
+                player.jump.idx = 0;
+                player.state = PLAYER_JUMP;
+            }
+            else 
+            {
+                player.jump.state = JMP_GRAVITY;
+                player.state = PLAYER_STAY;
+            }
+            
+        break;
+
+        case JMP_GRAVITY:
+
+            collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_DOWN);
+            if(collisionResult != COLLISION_DOWN) 
+            {
+                newPosition.y++;
+            }
+            else
+            {
+                player.jump.state = JMP_AWAITING;
+            }
+
+        break;            
+
+        case JMP_RISE:
+
+            if(player.jump.idx < sizeof(jumpArray))
+            {
+               newPosition.y -= jumpArray[player.jump.idx];
+               player.jump.idx++;
+            }
+            else
+            {
+                player.jump.state = JMP_FALL;    
+                player.jump.idx = 0;
+            }
+            
+        break;
+
+        case JMP_FALL:
+
+                newPosition.y += 2;
+                //step can be > 2. And we can get inside collide block ! 14 + 2 = 16. Border = 15!
+                // We can use round for newPosition (bounding)
+                collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_DOWN);   
+                if(collisionResult == COLLISION_DOWN)                   
+                { 
+                    newPosition.y = roundYposition(newPosition.y);
+                    player.state = PLAYER_STAY;
+                    player.jump.state = JMP_AWAITING_RELEASE_BUTTON; 
                 }
-                else 
-                {
-                    jumpStage = GRAVITY;
-                }
-                
-            break;
-
-            case GRAVITY:
-
-                collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_DOWN);
-                if(collisionResult != COLLISION_DOWN) 
-                {
-                    newPosition.y++;
-                }
-                else
-                {
-                    jumpStage = AWAITING_JUMP;
-                }
-
-            break;            
-
-            case JUMP_RISE:
-
-                if(jumpIdx < 24)
-                {
-                   newPosition.y -= jumpArray[jumpIdx];
-                   kprintf("Jump Rise");
-
-                   jumpIdx++;
-                }
-                else
-                {
-                    jumpStage = JUMP_FALL;    
-                    jumpIdx = 0;
-                }
-                
-            break;
-
-            case JUMP_FALL:
-
-                    newPosition.y += 2;
-                    //step can be > 2. And we can get inside collide block ! 14 + 2 = 16. Border = 15!
-                    // We can use round for newPosition (bounding)
-                    collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_DOWN);   
-                    if(collisionResult == COLLISION_DOWN)                   
-                    { 
-                        newPosition.y = positionYRound(newPosition.y);
-                        jumpStage = AWAITING_JUMP; 
-                    }
-            break;        
-        }  
-    }
-    //player.globalPosition.x = newPosition.x;
+        break;        
+    }  
     player.globalPosition.y = newPosition.y;  
 }
 
@@ -222,10 +118,9 @@ void playerMove(void)
 {
 
     Vec2_Typedef newPosition = {player.globalPosition.x, player.globalPosition.y};
-    uint16_t input = JOY_readJoypad(0);
-     CollisionType_Typedef collisionResult = COLLISION_NOT_FOUND;
+    CollisionType_Typedef collisionResult = COLLISION_NOT_FOUND;
     
-   if((input & BUTTON_RIGHT) == BUTTON_RIGHT)
+   if(player.input.buttons.Right)
     {
         if(newPosition.x < 5000)
         {
@@ -234,14 +129,12 @@ void playerMove(void)
             {
                 newPosition.x++;       
             }
-
-
-
             player.direction = PLAYER_DIR_FORWARD;
         } 
+        if(player.state != PLAYER_JUMP) player.state = PLAYER_WALK;
     }  
 
-    if((input & BUTTON_LEFT) == BUTTON_LEFT)
+    if(player.input.buttons.Left)
     {
         if(newPosition.x > 0)
         {
@@ -252,104 +145,56 @@ void playerMove(void)
             }
             player.direction = PLAYER_DIR_BACKWARD;
         } 
+        if(player.state != PLAYER_JUMP) player.state = PLAYER_WALK;
     }     
-
     player.globalPosition.x = newPosition.x;
-    player.globalPosition.y = newPosition.y;  
 }
 
-void drawPlayer(void)
+void playerDraw(void)
 {
-    PlayerAnim_Typedef newAnimState = ANIM_STAY;
-
-    switch (player.animState)
+    switch (player.state)
     {
-        case ANIM_STAY:
+        case PLAYER_STAY:
+            player.animState = ANIM_STAY;
+        break;
 
-            if(player.direction == PLAYER_DIR_FORWARD) SPR_setHFlip(player.sprite, FALSE);
-            else SPR_setHFlip(player.sprite, TRUE);
+        case PLAYER_WALK:
+            player.animState = ANIM_WALK;
+        break;        
+        
+        case PLAYER_JUMP:
+            player.animState = ANIM_JUMP;
+        break;
+        
+        case PLAYER_ATTACK:
+            player.animState = ANIM_ATACK;
+        break;
 
-            //SPR_setAnim(player.sprite, ANIM_WALK);
+        case PLAYER_DIE:
+            player.animState = ANIM_DEATH;
+        break;        
+
+        default:
+
+            //player.animState = ANIM_STAY;
 
         break;
-    
-    default:
-        break;
-    }
+        }
+
+    if(player.direction == PLAYER_DIR_FORWARD)  SPR_setHFlip(player.sprite, FALSE);
+    else                                        SPR_setHFlip(player.sprite, TRUE);
+
     SPR_setPosition(player.sprite, player.screenPosition.x, player.screenPosition.y); 
-    
-    SPR_setAnim(player.sprite, 0);
-    
-
+    SPR_setAnim(player.sprite, player.animState);
 }
 
-void updatePlayerAnimation(void)
+//SPR_setAnimationLoop(sonicObj.sprite, FALSE);
+//SPR_setAnim(sonicObj.sprite, ANIM_DIE);
+//if (SPR_isAnimationDone(sonicObj->sprite))
+//SPR_setVisibility(sprite, VISIBLE);
+
+
+void playerGetButtons(void)
 {
-    //if(player.)
-
+    player.input.data  = JOY_readJoypad(0);
 }
-
-
-void setSpritePosition(Sprite* sprite, s16 x, s16 y)
-{
-    // clip out of screen sprites
-    if ((x < -100) || (x > 320) || (y < -100) || (y > 240)) SPR_setVisibility(sprite, HIDDEN);
-    else
-    {
-        SPR_setVisibility(sprite, VISIBLE);
-        SPR_setPosition(sprite, x, y);
-    }
-}
-
-  void player12(void)
-  {
-    /*
-    if(input == BUTTON_RIGHT)
-            {
-                if(++soniXpos < 320)
-                {
-                    SPR_setAnim(sonicObj.sprite, ANIM_WALK);
-                    SPR_setHFlip(sonicObj.sprite, FALSE);
-                    SPR_setPosition(sonicObj.sprite, soniXpos, soniYpos);       
-                }
-            } 
-
-            if(input == BUTTON_LEFT)
-            {
-                if(--soniXpos > -48)
-                {
-                    SPR_setAnim(sonicObj.sprite, ANIM_WALK);
-                    SPR_setHFlip(sonicObj.sprite, TRUE);
-                    SPR_setPosition(sonicObj.sprite, soniXpos, soniYpos);       
-                }   
-            } 
-                
-        if(input == BUTTON_DOWN)
-            {
-                if(++soniYpos < 240)
-                {
-                    SPR_setAnim(sonicObj.sprite, ANIM_WALK);
-                    SPR_setHFlip(sonicObj.sprite, TRUE);
-                    SPR_setPosition(sonicObj.sprite, soniXpos, soniYpos);       
-                }             
-            } 
-
-        if(input == BUTTON_UP)
-            {
-                if(--soniYpos > -48)
-                {
-                    SPR_setAnim(sonicObj.sprite, ANIM_WALK);
-                    SPR_setHFlip(sonicObj.sprite, TRUE);
-                    SPR_setPosition(sonicObj.sprite, soniXpos, soniYpos);       
-                }             
-            }    
-            
-        if(input == BUTTON_A)
-            {
-                SPR_setAnimationLoop(sonicObj.sprite, FALSE);
-                SPR_setAnim(sonicObj.sprite, ANIM_DIE);
-
-            }         
-*/  
-            //if (SPR_isAnimationDone(sonicObj->sprite))
-    }

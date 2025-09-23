@@ -7,8 +7,12 @@
 // Player state enumeration
 typedef enum
 {
-    PLAYER_DIED,      // Player is dead/waiting to respawn
-    PLAYER_OK,    // Player is alive and active
+    PLAYER_STAY,
+    PLAYER_WALK,
+    PLAYER_JUMP,
+    PLAYER_ATTACK,
+    PLAYER_ATTACK_2,
+    PLAYER_DIE, 
 } PlayerState_Typedef;
 
 
@@ -36,30 +40,49 @@ typedef enum    _player_animation
     ANIM_SLEEP,
 } PlayerAnim_Typedef;
 
-typedef enum _player_jump
+typedef enum _player_jump_state
 {
-    JMP_RISE = 0,     
+    JMP_AWAITING = 0,     
+    JMP_GRAVITY,    
+    JMP_RISE,     
     JMP_FALL,    
+    JMP_AWAITING_RELEASE_BUTTON,
 } JumpStage_Typedef;
 
-typedef struct _jump
+typedef struct _player_jump
 {
-    uint16_t                allow;
-    uint16_t                maxHight;
-    uint16_t                hight;
-    uint16_t                step;
-    uint16_t                buttonReleased;
-    uint16_t                maxSpeed;
-    uint16_t                fallSpeed;
-    uint16_t                try;
-    JumpStage_Typedef       stage;
+    JumpStage_Typedef   state;
+    uint16_t            idx;
 }Jump_Typedef;
+
+
+typedef struct _input_word
+{
+    uint16_t    dummy_1 : 6;
+    uint16_t    Start   : 1;
+    uint16_t    C       : 1;
+    uint16_t    B       : 1;
+    uint16_t    A       : 1;
+    uint16_t    dummy_0 : 2;
+    uint16_t    Right   : 1;
+    uint16_t    Left    : 1;
+    uint16_t    Down    : 1;
+    uint16_t    Up      : 1;
+}InputWord_Typedef;
+
+typedef union _input
+{
+    uint16_t            data;
+    InputWord_Typedef   buttons;
+
+}Input_Typedef;
+
 
 typedef struct _player
 {
     const SpriteDefinition  *spriteDef;     // RawSprite reference
     Sprite                  *sprite;        // Engine Sprite reference
-    PlayerAnim_Typedef       animState;
+    PlayerAnim_Typedef      animState;
     PlayerDirection_Typedef direction;
     Vec2_Typedef            globalPosition;
     Vec2_Typedef            screenPosition;
@@ -68,15 +91,18 @@ typedef struct _player
     uint16_t                relaxTimer;
     uint16_t                health;
     Jump_Typedef            jump;
-    uint16_t                state;
+    PlayerState_Typedef     state;
     uint16_t                jumpPressed;
+    Input_Typedef           input;
 }Player_Typedef;
 
 extern Player_Typedef player;
 
 void updatePlayerPosition(void);
-void drawPlayer(void);
-
+void playerGetButtons(void);
+void playerDraw(void);
 void playerJump(void);
+void playerMove(void);
+uint16_t roundYposition(uint16_t);
 
 #endif

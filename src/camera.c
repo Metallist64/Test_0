@@ -20,7 +20,7 @@ Camera_Typedef playerCamera =
 char str_debug[64];
 char str_debug_2[64];
 
-void updatePlayerCamera(void)
+void updateCamera(void)
 {
 	RECT_Typedef focusZoneLimits		= {OUTSIDE_AREA_WIDTH, OUTSIDE_AREA_HIGHT, level_0.width - OUTSIDE_AREA_WIDTH, level_0.hight - OUTSIDE_AREA_HIGHT,};
 	RECT_Typedef newFocusZone			= {playerCamera.focusZone.left, playerCamera.focusZone.top, playerCamera.focusZone.right, playerCamera.focusZone.bottom };
