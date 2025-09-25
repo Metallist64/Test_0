@@ -24,9 +24,46 @@ Player_Typedef player =
     .jump.state             = JMP_AWAITING,
 };
 
-const uint8_t jumpArray[] = {2,2,2,2,2,2,2,2,
-                              2,2,2,2,2,2,2,2,
-                              1,1,0,0,0,0,0,0};
+const uint8_t jumpArray[] = {   2,2,2,2,2,2,2,2,
+                                2,2,2,2,2,2,2,2,
+                                1,1,0,0,0,0,0,0};
+
+
+
+
+void playerAttack(void)
+{
+    //Attack collision size 16*32
+    switch (player.state)
+    {
+        case PLAYER_STAY:
+        case PLAYER_WALK:
+
+            if(player.input.buttons.C)
+            {
+                player.state = PLAYER_ATTACK;
+                player.animState = ANIM_ATACK;
+            }
+
+        break;
+
+        case PLAYER_ATTACK:
+        
+            if (SPR_isAnimationDone(player.sprite))
+            {
+                player.state = PLAYER_STAY;       
+
+            }
+
+        break;
+
+        default:
+        
+        break;
+
+    }
+}
+
 
 uint16_t roundYposition(uint16_t position) //Bound
 {
@@ -63,7 +100,10 @@ void playerJump(void)
             else 
             {
                 player.jump.state = JMP_GRAVITY;
-                player.state = PLAYER_STAY;
+                if(player.state != PLAYER_ATTACK)
+                {
+                    player.state = PLAYER_STAY;                    
+                }
             }
             
         break;
@@ -73,7 +113,7 @@ void playerJump(void)
             collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_DOWN);
             if(collisionResult != COLLISION_DOWN) 
             {
-                newPosition.y++;
+                newPosition.y += 2; // Must be even
             }
             else
             {
@@ -120,7 +160,7 @@ void playerMove(void)
     Vec2_Typedef newPosition = {player.globalPosition.x, player.globalPosition.y};
     CollisionType_Typedef collisionResult = COLLISION_NOT_FOUND;
     
-   if(player.input.buttons.Right)
+   if((player.input.buttons.Right) && (player.state != PLAYER_ATTACK))
     {
         if(newPosition.x < 5000)
         {
@@ -134,7 +174,7 @@ void playerMove(void)
         if(player.state != PLAYER_JUMP) player.state = PLAYER_WALK;
     }  
 
-    if(player.input.buttons.Left)
+    if((player.input.buttons.Left) && (player.state != PLAYER_ATTACK))
     {
         if(newPosition.x > 0)
         {

@@ -103,6 +103,7 @@ void playerGetButtons(void);
 void playerDraw(void);
 void playerJump(void);
 void playerMove(void);
+void playerAttack(void);
 uint16_t roundYposition(uint16_t);
 
 #endif
