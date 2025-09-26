@@ -33,29 +33,23 @@ typedef enum _collision_type
 
 typedef enum _block_type
 {
-    BLOCK_EMPTY = 0,
-    BLOCK_SOLID,
-    BLOCK_SPIKE,
-    BLOCK_TIMBER,
+    BLOCK_EMPTY     = 0,
+    BLOCK_SOLID     = 1,
+    BLOCK_SPIKE     = 2,
+    BLOCK_TIMBER    = 3,
 }BlockType_Typedef;
 
-typedef struct _block_properties
+typedef struct block_info
 {
-    uint16_t    topOffset;
-    uint16_t    damage;
-
-}BlockProperties_Typedef;
-
-typedef struct _collision_block_info
-{
-    uint16_t            idx;
+    uint16_t            topCollisionOffset;
+    uint16_t            damage;
     BlockType_Typedef   type;
+}BlockInfo_Typedef;
 
-}CollisionBlockInfo_Typedef;
 
-CollisionType_Typedef       getCollision            (const CollisionMap_Typedef *map, CollisionVec_Typedef CollisionVector);
-BlockProperties_Typedef     getBlockProperties      (BlockType_Typedef blockType);
-CollisionBlockInfo_Typedef  getCollisionBlockInfo   (const CollisionMap_Typedef *map, Vec2_Typedef *vertex);
+
+CollisionType_Typedef   getCollision    (const CollisionMap_Typedef *map, CollisionVec_Typedef CollisionVector);
+BlockInfo_Typedef       getBlockInfo    (const CollisionMap_Typedef *map, Vec2_Typedef *vertex);
 
 #endif
 

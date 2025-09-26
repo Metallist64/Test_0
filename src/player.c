@@ -74,6 +74,8 @@ uint16_t roundYposition(uint16_t position) //Bound
     return (result);
 }
 
+uint32_t flag = 0;
+
 void playerJump(void)
 {
     Vec2_Typedef newPosition = {player.globalPosition.x, player.globalPosition.y};
@@ -114,6 +116,12 @@ void playerJump(void)
             if(collisionResult != COLLISION_DOWN) 
             {
                 newPosition.y += 2; // Must be even
+                KDebug_Alert("Gravity to new TopOffset");
+                
+                
+
+
+
             }
             else
             {
@@ -140,12 +148,22 @@ void playerJump(void)
         case JMP_FALL:
 
                 newPosition.y += 2;
+                flag = 1;
                 //step can be > 2. And we can get inside collide block ! 14 + 2 = 16. Border = 15!
                 // We can use round for newPosition (bounding)
                 collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_DOWN);   
                 if(collisionResult == COLLISION_DOWN)                   
                 { 
                     newPosition.y = roundYposition(newPosition.y);
+                    KDebug_Alert("Rounding to 16");
+                    
+                    /*
+                    При прыжке на бревне происходит коллизия с блоком со смещенным верхом.
+                    И для выхода из коллизии выполняется округление новой координаты до 16.
+                    После округления происходит падение, т.к. начинает работать гравитация.
+                    И игрок наничает падать до смещенного верха.
+                    */
+
                     player.state = PLAYER_STAY;
                     player.jump.state = JMP_AWAITING_RELEASE_BUTTON; 
                 }
