@@ -1,6 +1,7 @@
 #include "collisions.h"
 #include "common.h"
 #include "player.h"
+#include "level.h"
 #include <genesis.h>
 #include <kdebug.h>
 
@@ -8,10 +9,12 @@ char strDbg[64];
 
 CollisionType_Typedef getCollision(const CollisionMap_Typedef *map, CollisionVec_Typedef CollisionVector)
 {
-    uint16_t blockIdx               = 0;
-    //uint8_t blockColided            = 0;
-    uint8_t tmp                     = 0;
-    CollisionType_Typedef result    = COLLISION_NOT_FOUND;
+    
+    uint16_t                    blockTopOffset      = 0;
+    BlockProperties_Typedef     blockProperties     = {0,0};
+    CollisionType_Typedef       result              = COLLISION_NOT_FOUND;
+    CollisionBlockInfo_Typedef  collisionBlockInfo  = {0, BLOCK_EMPTY};
+
 
     Vec2_Typedef vertex[4] = {                                                                                  // CW order       
         { player.globalPosition.x + player.collisionRectOffset.x,                                  player.globalPosition.y + player.collisionRectOffset.y },    // Rectangle vertex 0 
@@ -26,88 +29,99 @@ CollisionType_Typedef getCollision(const CollisionMap_Typedef *map, CollisionVec
         
         break;
         
-        case COLLISION_VECTOR_DOWN:
+        case COLLISION_VECTOR_DOWN:     //Using block properties to get top offset for timber, spikes and other complex tile
             vertex[2].y += 1;
             vertex[3].y += 1;
-            // Check vertex 2
-            blockIdx = (vertex[2].y /map->gridStep) * map->width + vertex[2].x / map->gridStep;
-            tmp = *(map->data + blockIdx);
 
-            // Check vertex 3
-            blockIdx = (vertex[3].y /map->gridStep) * map->width + vertex[3].x / map->gridStep;
-            tmp += *(map->data + blockIdx);
+            collisionBlockInfo = getCollisionBlockInfo(map, &vertex[2]);
 
-            if(tmp)
+            if(collisionBlockInfo.type != BLOCK_EMPTY)
             {
-                //KDebug_Alert("Collision down.");
-                result = COLLISION_DOWN;
+                blockTopOffset = vertex[2].y % map->gridStep;
+                blockProperties = getBlockProperties(collisionBlockInfo.type);
+                if(blockTopOffset == blockProperties.topOffset)
+                {
+                    //KDebug_Alert("Collision down.");
+                    result = COLLISION_DOWN;    
+                }
             }
-
+            else
+            {
+                collisionBlockInfo = getCollisionBlockInfo(map, &vertex[3]);
+                
+                if(collisionBlockInfo.type != BLOCK_EMPTY)
+                {
+                    blockTopOffset = vertex[3].y % map->gridStep;
+                    blockProperties = getBlockProperties(collisionBlockInfo.type);
+                    if(blockTopOffset == blockProperties.topOffset)
+                    {
+                        //KDebug_Alert("Collision down.");
+                        result = COLLISION_DOWN;    
+                    }
+                }
+            }
         break;
 
         case COLLISION_VECTOR_LEFT:
             vertex[0].x -= 1;
             vertex[3].x -= 1;        
 
-            // Check vertex 2
-            blockIdx = (vertex[0].y /map->gridStep) * map->width + vertex[0].x / map->gridStep;
-            tmp = *(map->data + blockIdx);
-
-            // Check vertex 3
-            blockIdx = (vertex[3].y /map->gridStep) * map->width + vertex[3].x / map->gridStep;
-            tmp += *(map->data + blockIdx);
-
-            if(tmp)
+            collisionBlockInfo = getCollisionBlockInfo(map, &vertex[0]);
+            if(collisionBlockInfo.type == BLOCK_SOLID)
             {
-                KDebug_Alert("Collision left.");
+                //KDebug_Alert("Collision left.");
                 result = COLLISION_LEFT;
-            } 
+            }
+            else
+            {
+                collisionBlockInfo = getCollisionBlockInfo(map, &vertex[3]);
+                if(collisionBlockInfo.type == BLOCK_SOLID)
+                {
+                    //KDebug_Alert("Collision left.");
+                    result = COLLISION_LEFT;
+                }
+            }
         break;        
 
         case COLLISION_VECTOR_RIGHT:
             vertex[1].x += 1;
             vertex[2].x += 1;      
 
-            // Check vertex 2
-            blockIdx = (vertex[1].y /map->gridStep) * map->width + vertex[1].x / map->gridStep;
-            tmp = *(map->data + blockIdx);
-
-            // Check vertex 3
-            blockIdx = (vertex[2].y /map->gridStep) * map->width + vertex[2].x / map->gridStep;
-            tmp += *(map->data + blockIdx);
-
-            if(tmp)
+            collisionBlockInfo = getCollisionBlockInfo(map, &vertex[1]);
+            if(collisionBlockInfo.type == BLOCK_SOLID)
             {
-                KDebug_Alert("Collision right.");
+                //KDebug_Alert("Collision left.");
                 result = COLLISION_RIGHT;
-            }            
-            
-            //result = COLLISION_RIGHT;
+            }
+            else
+            {
+                collisionBlockInfo = getCollisionBlockInfo(map, &vertex[2]);
+                if(collisionBlockInfo.type == BLOCK_SOLID)
+                {
+                    //KDebug_Alert("Collision left.");
+                    result = COLLISION_RIGHT;
+                }
+            }
         break;        
     
-    default:
+        default:
 
         break;
     }
 
     //KDebug_Alert("Collision rectangle:");
     //KDebug_AlertNumber(vertex[0].x);    
-
-    /*
-    for(uint16_t i = 0; i < 4; i++)
-    {
-            blockIdx = (vertex[i].y /map->gridStep) * map->width + vertex[i].x / map->gridStep;
-            blockColided = *(map->data + blockIdx);
-            if(blockColided)
-            {
-                KDebug_Alert("Collision detected.");
-                result = true;
-                //result |= (1 << i);
-            }
-    }     
-    */
-
     
     return result;
 }
  
+
+CollisionBlockInfo_Typedef getCollisionBlockInfo(const CollisionMap_Typedef *map, Vec2_Typedef *vertex)
+{
+    CollisionBlockInfo_Typedef colblockinfo = {0};
+
+    colblockinfo.idx    = (vertex->y /map->gridStep) * map->width + vertex->x / map->gridStep;         
+    colblockinfo.type   = map->data[colblockinfo.idx];
+
+    return colblockinfo;
+}

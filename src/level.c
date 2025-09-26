@@ -12,7 +12,40 @@
 u16 VDPTilesFilled = TILE_USER_INDEX;
 Map *backgroubd_A;
 
+BlockProperties_Typedef getBlockProperties(BlockType_Typedef blockType)
+{
+	BlockProperties_Typedef result;
 
+	switch (blockType)
+	{
+		case BLOCK_EMPTY:
+				result.damage		= 0;
+				result.topOffset	= 0;
+		break;
+
+		case BLOCK_SOLID:
+				result.damage		= 0;
+				result.topOffset	= 0;
+		break;		
+	
+		case BLOCK_SPIKE:
+				result.damage		= 15;
+				result.topOffset	= 2;
+		break;
+
+		case BLOCK_TIMBER:
+				result.damage		= 0;
+				result.topOffset	= 7;
+		break;		
+
+
+	default:
+		break;
+	}
+
+	return	result;
+
+}
 
 
 void loadLevel(Level_Typedef *level)
