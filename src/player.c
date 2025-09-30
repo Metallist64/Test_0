@@ -15,7 +15,7 @@ Player_Typedef player =
     .animState              = ANIM_STAY,
     .screenPosition         = {0,0},
     .globalPosition         = {0,0},
-    .collisionRectOffset    = {20,16},
+    .collisionRectOffset    = {22,14},
     .collisionRect          = {0,0,16,32},
     .relaxTimer             = 10,
     .health                 = 100,
@@ -65,21 +65,14 @@ void playerAttack(void)
 }
 
 
-uint16_t roundYposition(uint16_t position) //Bound
-{
-    uint16_t result = 0;
-    uint16_t k = (position + 1) / 16;
-    result = k * 16;
 
-    return (result);
-}
 
 uint32_t flag = 0;
 
 void playerJump(void)
 {
-    Vec2_Typedef newPosition = {player.globalPosition.x, player.globalPosition.y};
-    CollisionType_Typedef collisionResult = COLLISION_NOT_FOUND;
+    Vec2_Typedef            newPosition     = {player.globalPosition.x, player.globalPosition.y};
+    CollisionInfo_Typedef   collisionResult = {COLLISION_NOT_FOUND, 0, 0};
     
      switch (player.jump.state)
      {
@@ -112,22 +105,17 @@ void playerJump(void)
 
         case JMP_GRAVITY:
 
-            collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_DOWN);
-            if(collisionResult != COLLISION_DOWN) 
-            {
-                newPosition.y += 2; // Must be even
-                KDebug_Alert("Gravity to new TopOffset");
-                
-                
-
-
-
-            }
-            else
+            //KDebug_Alert("Gravity case");
+            newPosition.y += 2; // Must be even
+            collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_DOWN);
+            
+            if(collisionResult.type == COLLISION_DOWN)    
             {
                 player.jump.state = JMP_AWAITING;
+                newPosition.y = collisionResult.alignedPositionY;
+                //KDebug_Alert("Gravity collision.");
+                //KDebug_AlertNumber(newPosition.y);                 
             }
-
         break;            
 
         case JMP_RISE:
@@ -146,24 +134,13 @@ void playerJump(void)
         break;
 
         case JMP_FALL:
-
+                
+                KDebug_Alert("Fall case");
                 newPosition.y += 2;
-                flag = 1;
-                //step can be > 2. And we can get inside collide block ! 14 + 2 = 16. Border = 15!
-                // We can use round for newPosition (bounding)
-                collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_DOWN);   
-                if(collisionResult == COLLISION_DOWN)                   
+                collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_DOWN);   
+                if(collisionResult.type == COLLISION_DOWN)                   
                 { 
-                    newPosition.y = roundYposition(newPosition.y);
-                    KDebug_Alert("Rounding to 16");
-                    
-                    /*
-                    При прыжке на бревне происходит коллизия с блоком со смещенным верхом.
-                    И для выхода из коллизии выполняется округление новой координаты до 16.
-                    После округления происходит падение, т.к. начинает работать гравитация.
-                    И игрок наничает падать до смещенного верха.
-                    */
-
+                    newPosition.y = collisionResult.alignedPositionY;
                     player.state = PLAYER_STAY;
                     player.jump.state = JMP_AWAITING_RELEASE_BUTTON; 
                 }
@@ -176,14 +153,15 @@ void playerMove(void)
 {
 
     Vec2_Typedef newPosition = {player.globalPosition.x, player.globalPosition.y};
-    CollisionType_Typedef collisionResult = COLLISION_NOT_FOUND;
+    CollisionInfo_Typedef collisionResult = {COLLISION_NOT_FOUND, 0, 0};
     
    if((player.input.buttons.Right) && (player.state != PLAYER_ATTACK))
     {
         if(newPosition.x < 5000)
         {
-            collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_RIGHT);
-            if(collisionResult != COLLISION_RIGHT)
+         
+            collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_RIGHT);
+            if(collisionResult.type != COLLISION_RIGHT)
             {
                 newPosition.x++;       
             }
@@ -196,8 +174,8 @@ void playerMove(void)
     {
         if(newPosition.x > 0)
         {
-            collisionResult = getCollision(level_0.collisions, COLLISION_VECTOR_LEFT);
-            if(collisionResult != COLLISION_LEFT)
+            collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_LEFT);
+            if(collisionResult.type != COLLISION_LEFT)
             {
                 newPosition.x--;       
             }
