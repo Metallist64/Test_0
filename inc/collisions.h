@@ -16,10 +16,13 @@ typedef struct _collision_map
 
 typedef enum _collision_vector
 {
-    COLLISION_VECTOR_UP     = 0x01,
-    COLLISION_VECTOR_DOWN   = 0x02,
-    COLLISION_VECTOR_LEFT   = 0x04,
-    COLLISION_VECTOR_RIGHT  = 0x08,
+    COLLISION_VECTOR_NOT_USED   = 0x00,
+    COLLISION_VECTOR_UP         = 0x01,
+    COLLISION_VECTOR_DOWN       = 0x02,
+    COLLISION_VECTOR_LEFT       = 0x04,
+    COLLISION_VECTOR_LR         = 0x06,
+    COLLISION_VECTOR_RIGHT      = 0x08,
+    COLLISION_VECTOR_ALL        = 0x0F,
 
 }CollisionVec_Typedef;
 
@@ -39,14 +42,15 @@ typedef enum _block_type
     BLOCK_SOLID     = 1,
     BLOCK_SPIKE     = 2,
     BLOCK_TIMBER    = 3,
+    BLOCK_SHELF     = 4,
 
 }BlockType_Typedef;
 
 typedef struct block_info
 {
-    uint16_t            groundLevel;
-    uint16_t            damage;
-    BlockType_Typedef   type;
+    uint16_t                groundLevel;
+    uint16_t                damage;
+    CollisionVec_Typedef    collisionVectorMask;
 
 }BlockInfo_Typedef;
 
@@ -65,7 +69,8 @@ typedef struct _collision_info
 }CollisionInfo_Typedef;
 
 CollisionInfo_Typedef getCollision          (const CollisionMap_Typedef *map, Vec2_Typedef probePosition, CollisionVec_Typedef CollisionVector);
-CollisionType_Typedef getCollisionLeftRight (BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos, CollisionType_Typedef collisionType);
+CollisionType_Typedef getCollisionLeft      (BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos);
+CollisionType_Typedef getCollisionRight     (BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos);
 CollisionInfo_Typedef getCollisionDown      (BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos, Vec2_Typedef position);
 BlockInfo_Typedef     getBlockInfo          (const CollisionMap_Typedef *map, Vec2_Typedef *vertex);
 

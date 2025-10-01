@@ -14,8 +14,8 @@ CollisionInfo_Typedef getCollision(const CollisionMap_Typedef *map, Vec2_Typedef
 
     CollisionInfo_Typedef   result          = {COLLISION_NOT_FOUND, 0, 0};
     BlockInfoPack_Typedef   blocks_Info     = {
-                                                .data[0] = {0,0,BLOCK_EMPTY},
-                                                .data[1] = {0,0,BLOCK_EMPTY},                                                    
+                                                .data[0] = {0, 0, COLLISION_VECTOR_NOT_USED},
+                                                .data[1] = {0, 0, COLLISION_VECTOR_NOT_USED},                                                    
                                               }; 
     uint16_t                vertex_Ypos[2]  = {0xffff, 0xffff};
     
@@ -43,35 +43,8 @@ CollisionInfo_Typedef getCollision(const CollisionMap_Typedef *map, Vec2_Typedef
             vertex_Ypos[1]  = vertex[3].y % map->gridStep;     
 
             result = getCollisionDown(&blocks_Info, vertex_Ypos, position);
-            
-            /*
-            if(block_Info[0].type != BLOCK_EMPTY)
-            {
-                if(vertex_Ypos[0] >= block_Info[0].groundLevel)
-                {
-                    result.type = COLLISION_DOWN; 
-                    result.alignedPositionY = block_Info[0].groundLevel - vertex_Ypos[0] - 1 + position.y;
-                    //KDebug_AlertNumber(position.y);  
-                }
-            }
 
-            if(result.type != COLLISION_DOWN)
-            {
-                if(block_Info[1].type != BLOCK_EMPTY)
-                {
-                    if(vertex_Ypos[1] >= block_Info[1].groundLevel)
-                    {
-                        result.type = COLLISION_DOWN;  
-                        result.alignedPositionY = block_Info[1].groundLevel - vertex_Ypos[1] - 1 + position.y;
-                    }
-                } 
-            }            
-            
-            */
-
-
-           
-         break;
+        break;
 
         case COLLISION_VECTOR_RIGHT:
 
@@ -83,19 +56,7 @@ CollisionInfo_Typedef getCollision(const CollisionMap_Typedef *map, Vec2_Typedef
             vertex_Ypos[0]      = vertex[1].y % map->gridStep;
             vertex_Ypos[1]      = vertex[2].y % map->gridStep;
 
-            result.type = getCollisionLeftRight(&blocks_Info, vertex_Ypos, COLLISION_RIGHT);
-
-            /*
-            if((block_Info[0].type != BLOCK_EMPTY) && (vertex_Ypos[0] >= block_Info[0].groundLevel))
-            {
-                result.type = COLLISION_RIGHT;                        
-            }
-            else if((block_Info[1].type != BLOCK_EMPTY) && (vertex_Ypos[1] >= block_Info[1].groundLevel))
-                 {   
-                    result.type  = COLLISION_RIGHT;                        
-                 }            
-            */
-
+            result.type = getCollisionRight(&blocks_Info, vertex_Ypos);
 
         break;        
 
@@ -108,20 +69,8 @@ CollisionInfo_Typedef getCollision(const CollisionMap_Typedef *map, Vec2_Typedef
             blocks_Info.data[1] = getBlockInfo (map, &vertex[3]);
             vertex_Ypos[0]      = vertex[0].y % map->gridStep;
             vertex_Ypos[1]      = vertex[3].y % map->gridStep;
-
-            result.type = getCollisionLeftRight(&blocks_Info, vertex_Ypos, COLLISION_LEFT);
-            /*
-                        if((block_Info[0].type != BLOCK_EMPTY) && (vertex_Ypos[0] >= block_Info[0].groundLevel))
-            {
-                result.type = COLLISION_LEFT;                        
-            }
-            else if((block_Info[1].type != BLOCK_EMPTY) && (vertex_Ypos[1] >= block_Info[1].groundLevel))
-                 {   
-                    result.type  = COLLISION_LEFT;                        
-                 }
-            */
-
-
+             
+            result.type = getCollisionLeft(&blocks_Info, vertex_Ypos);
 
         break;        
     
@@ -146,29 +95,34 @@ BlockInfo_Typedef getBlockInfo (const CollisionMap_Typedef *map, Vec2_Typedef *v
     switch(blockType)
     {
         case BLOCK_EMPTY:
-			blockInfo.damage		= 0;
-			blockInfo.groundLevel   = 0;
-            blockInfo.type          = BLOCK_EMPTY;
+			blockInfo.damage		        = 0;
+			blockInfo.groundLevel           = 0;
+            blockInfo.collisionVectorMask   = COLLISION_VECTOR_NOT_USED;
 		break;
 
 		case BLOCK_SOLID:
-			blockInfo.damage		= 0;
-			blockInfo.groundLevel	= 0;
-            blockInfo.type          = BLOCK_SOLID;
+			blockInfo.damage		        = 0;
+			blockInfo.groundLevel	        = 0;
+            blockInfo.collisionVectorMask   = COLLISION_VECTOR_ALL;
 		break;		
 	
 		case BLOCK_SPIKE:
-			blockInfo.damage		= 15;
-			blockInfo.groundLevel	= 5;
-            blockInfo.type          = BLOCK_SPIKE;
+			blockInfo.damage		        = 15;
+			blockInfo.groundLevel	        = 14;
+            blockInfo.collisionVectorMask   = COLLISION_VECTOR_DOWN;
 		break;
 
 		case BLOCK_TIMBER:
-			blockInfo.damage		= 0;
-			blockInfo.groundLevel	= 8;
-            blockInfo.type          = BLOCK_TIMBER;
+			blockInfo.damage		        = 0;
+			blockInfo.groundLevel	        = 8;
+            blockInfo.collisionVectorMask   = COLLISION_VECTOR_ALL;
 		break;		
 
+		case BLOCK_SHELF:
+			blockInfo.damage		        = 0;
+			blockInfo.groundLevel	        = 0;
+            blockInfo.collisionVectorMask   = COLLISION_VECTOR_DOWN;
+		break;		        
 
 	    default:
 
@@ -179,61 +133,76 @@ BlockInfo_Typedef getBlockInfo (const CollisionMap_Typedef *map, Vec2_Typedef *v
     return blockInfo;
 }
 
-
-
-
-CollisionType_Typedef getCollisionLeftRight(BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos, CollisionType_Typedef collisionType)
+CollisionType_Typedef getCollisionLeft(BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos)
 {
     CollisionType_Typedef result = COLLISION_NOT_FOUND;
 
-    if((blocks_Info->data[0].type != BLOCK_EMPTY) && (vertex_Ypos[0] >= blocks_Info->data[0].groundLevel))
+    if ((blocks_Info->data[0].collisionVectorMask & COLLISION_VECTOR_LEFT) && (vertex_Ypos[0] >= blocks_Info->data[0].groundLevel))
     {
-        result = collisionType;                        
+        result = COLLISION_LEFT;     
     }
-    else if((blocks_Info->data[1].type != BLOCK_EMPTY) && (vertex_Ypos[1] >= blocks_Info->data[1].groundLevel))
-         {   
-            result  = collisionType;                        
-         }
+    else if ((blocks_Info->data[1].collisionVectorMask & COLLISION_VECTOR_LEFT) && (vertex_Ypos[1] >= blocks_Info->data[1].groundLevel))
+    {
+        result = COLLISION_LEFT;     
+    }
+
     return result;     
 }
+
+CollisionType_Typedef getCollisionRight(BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos)
+{
+    CollisionType_Typedef result = COLLISION_NOT_FOUND;
+
+    if ((blocks_Info->data[0].collisionVectorMask & COLLISION_VECTOR_RIGHT) && (vertex_Ypos[0] >= blocks_Info->data[0].groundLevel))
+    {
+        result = COLLISION_RIGHT;     
+    }
+    else if ((blocks_Info->data[1].collisionVectorMask & COLLISION_VECTOR_RIGHT) && (vertex_Ypos[1] >= blocks_Info->data[1].groundLevel))
+    {
+        result = COLLISION_RIGHT;     
+    }
+
+    return result;     
+}
+
 
 CollisionInfo_Typedef getCollisionDown(BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos, Vec2_Typedef position)
 {
     CollisionInfo_Typedef result = {COLLISION_NOT_FOUND, 0, 0};
 
-    if((blocks_Info->data[0].type!= BLOCK_EMPTY) && (vertex_Ypos[0] >= blocks_Info->data[0].groundLevel))
+    if( (blocks_Info->data[0].collisionVectorMask & COLLISION_VECTOR_DOWN) && (vertex_Ypos[0] >= blocks_Info->data[0].groundLevel))
     {
             result.type = COLLISION_DOWN; 
             result.alignedPositionY = blocks_Info->data[0].groundLevel - vertex_Ypos[0] - 1 + position.y;
     }
-    else if((blocks_Info->data[1].type != BLOCK_EMPTY) && (vertex_Ypos[1] >= blocks_Info->data[1].groundLevel))
-            {
-                result.type = COLLISION_DOWN;  
-                result.alignedPositionY = blocks_Info->data[1].groundLevel - vertex_Ypos[1] - 1 + position.y;
-            }            
+    else if((blocks_Info->data[1].collisionVectorMask & COLLISION_VECTOR_DOWN) && (vertex_Ypos[1] >= blocks_Info->data[1].groundLevel))
+        {
+            result.type = COLLISION_DOWN;  
+            result.alignedPositionY = blocks_Info->data[1].groundLevel - vertex_Ypos[1] - 1 + position.y;
+        }            
     return result;            
 }
- /*
-            if(block_Info[0].type != BLOCK_EMPTY)
-            {
-                if(vertex_Ypos[0] >= block_Info[0].groundLevel)
-                {
-                    result.type = COLLISION_DOWN; 
-                    result.alignedPositionY = block_Info[0].groundLevel - vertex_Ypos[0] - 1 + position.y;
-                    //KDebug_AlertNumber(position.y);  
-                }
-            }
 
-            if(result.type != COLLISION_DOWN)
-            {
-                if(block_Info[1].type != BLOCK_EMPTY)
-                {
-                    if(vertex_Ypos[1] >= block_Info[1].groundLevel)
-                    {
-                        result.type = COLLISION_DOWN;  
-                        result.alignedPositionY = block_Info[1].groundLevel - vertex_Ypos[1] - 1 + position.y;
-                    }
-                } 
-            }            
-            
-            */
+
+/*
+CollisionType_Typedef getCollisionLeftRight(BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos, CollisionType_Typedef collisionType)
+{
+    CollisionType_Typedef result = COLLISION_NOT_FOUND;
+
+    if(vertex_Ypos[0] >= blocks_Info->data[0].groundLevel)
+    {
+    KDebug_Alert("Collision right vertex 0");
+    KDebug_AlertNumber(vertex_Ypos[0]);          
+    KDebug_AlertNumber(vertex_Ypos[1]);          
+        result = collisionType;     
+        while(1);
+    }
+    else if(vertex_Ypos[1] >= blocks_Info->data[1].groundLevel)
+         {   
+    KDebug_Alert("Collision right vertex 1");
+    KDebug_AlertNumber(vertex_Ypos[1]);              
+            result  = collisionType;                        
+         }
+    return result;     
+}
+*/

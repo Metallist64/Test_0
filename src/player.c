@@ -157,7 +157,7 @@ void playerMove(void)
     
    if((player.input.buttons.Right) && (player.state != PLAYER_ATTACK))
     {
-        if(newPosition.x < 5000)
+        if(newPosition.x < 5728)
         {
          
             collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_RIGHT);
