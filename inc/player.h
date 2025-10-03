@@ -1,8 +1,10 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "collisions.h"
 #include "common.h"
 #include <genesis.h>
+
 
 // Player state enumeration
 typedef enum
@@ -94,6 +96,7 @@ typedef struct _player
     PlayerState_Typedef     state;
     uint16_t                jumpPressed;
     Input_Typedef           input;
+    uint16_t                gravity;
 }Player_Typedef;
 
 extern Player_Typedef player;

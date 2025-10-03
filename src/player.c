@@ -22,6 +22,8 @@ Player_Typedef player =
     .state                  = 0,
     .jump.idx               = 0,
     .jump.state             = JMP_AWAITING,
+    .vertexPrevBlockIdx     = {0, 0,},
+    .gravity                = 2,    
 };
 
 const uint8_t jumpArray[] = {   2,2,2,2,2,2,2,2,
@@ -72,7 +74,7 @@ uint32_t flag = 0;
 void playerJump(void)
 {
     Vec2_Typedef            newPosition     = {player.globalPosition.x, player.globalPosition.y};
-    CollisionInfo_Typedef   collisionResult = {COLLISION_NOT_FOUND, 0, 0};
+    CollisionInfo_Typedef   collisionResult = {0};
     
      switch (player.jump.state)
      {
@@ -107,9 +109,9 @@ void playerJump(void)
 
             //KDebug_Alert("Gravity case");
             newPosition.y += 2; // Must be even
-            collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_DOWN);
+            collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_DOWN, player.gravity);
             
-            if(collisionResult.type == COLLISION_DOWN)    
+            if(collisionResult.value)    
             {
                 player.jump.state = JMP_AWAITING;
                 newPosition.y = collisionResult.alignedPositionY;
@@ -137,7 +139,7 @@ void playerJump(void)
                 
                 KDebug_Alert("Fall case");
                 newPosition.y += 2;
-                collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_DOWN);   
+                //collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_DOWN);   
                 if(collisionResult.type == COLLISION_DOWN)                   
                 { 
                     newPosition.y = collisionResult.alignedPositionY;
@@ -160,7 +162,7 @@ void playerMove(void)
         if(newPosition.x < 5728)
         {
          
-            collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_RIGHT);
+            //collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_RIGHT);
             if(collisionResult.type != COLLISION_RIGHT)
             {
                 newPosition.x++;       
@@ -174,7 +176,7 @@ void playerMove(void)
     {
         if(newPosition.x > 0)
         {
-            collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_LEFT);
+            //collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_LEFT);
             if(collisionResult.type != COLLISION_LEFT)
             {
                 newPosition.x--;       

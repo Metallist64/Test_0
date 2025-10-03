@@ -10,9 +10,83 @@
 #define TILEMAP_PLANE BG_A
 
 u16 VDPTilesFilled = TILE_USER_INDEX;
-Map *backgroubd_A;
+//Map *backgroubd_A;
 
 
+BlockInfo_Typedef blocksInfo[] = {
+
+    {
+        .damage		    	= 0,
+        .groundLevel    	= 0,
+        .type           	= BLOCK_EMPTY,
+		.collisionHandler	= EmptyBlockHandler,
+    },
+
+    {
+        .damage		    	= 0,
+        .groundLevel    	= 0,
+        .type           	= BLOCK_SOLID,
+		.collisionHandler	= SolidBlockHandler,
+    },
+
+    {
+        .damage		    	= 15,
+        .groundLevel    	= 14,
+        .type           	= BLOCK_SPIKE,
+		.collisionHandler	= SpikeBlockHandler,
+    },
+
+    {
+        .damage		    	= 0,
+        .groundLevel    	= 8,
+        .type           	= BLOCK_TIMBER,
+		.collisionHandler	= TimberBlockHandler,
+    },
+
+    {
+        .damage		    	= 0,
+        .groundLevel    	= 0,
+        .type           	= BLOCK_SHELF,
+		.collisionHandler	= ShelfBlockHandler,
+    },
+
+};
+
+uint16_t EmptyBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point)
+{
+	uint16_t result = false;
+
+	return result;
+};
+
+uint16_t SolidBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point)
+{
+	uint16_t result = true;
+	
+	return result;
+};
+
+uint16_t SpikeBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point)
+{
+	uint16_t result = true;
+	
+	return result;
+};
+
+uint16_t TimberBlockHandler  (BlockInfo_Typedef *block, Vec2_Typedef* point)
+{
+	uint16_t result = true;
+	//(vertex_Ypos[1] >= blocks_Info->data[1].groundLevel)
+	//vertex_Ypos[1]  = vertex[3].y % map->gridStep;     
+	return result;
+};
+
+uint16_t ShelfBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point)
+{
+	uint16_t result = true;
+	
+	return result;
+};
 
 
 void loadLevel(Level_Typedef *level)

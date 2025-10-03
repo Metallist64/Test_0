@@ -4,13 +4,14 @@
 
 #include <genesis.h>
 #include  "common.h"
+//#include  "level.h" - facking sucks
 
 typedef struct _collision_map
 {
-    uint16_t gridStep;
-    uint16_t width;
-    uint16_t hight;
-    const uint8_t *data;    
+    uint16_t        gridStep;
+    uint16_t        width;
+    uint16_t        hight;
+    const uint8_t   *data;     
 
 }CollisionMap_Typedef;
 
@@ -46,33 +47,12 @@ typedef enum _block_type
 
 }BlockType_Typedef;
 
-typedef struct block_info
+typedef struct _collision_result
 {
-    uint16_t                groundLevel;
-    uint16_t                damage;
-    CollisionVec_Typedef    collisionVectorMask;
-
-}BlockInfo_Typedef;
-
-typedef struct block_info_pack
-{
-    BlockInfo_Typedef data[2];
-}BlockInfoPack_Typedef;
-
-
-typedef struct _collision_info
-{
-    CollisionType_Typedef   type;
-    uint16_t                alignedPositionX;
-    uint16_t                alignedPositionY;
-    
+    uint16_t   successPasses;
+    uint16_t   value;
+    uint8_t    vertex[2];
 }CollisionInfo_Typedef;
-
-CollisionInfo_Typedef getCollision          (const CollisionMap_Typedef *map, Vec2_Typedef probePosition, CollisionVec_Typedef CollisionVector);
-CollisionType_Typedef getCollisionLeft      (BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos);
-CollisionType_Typedef getCollisionRight     (BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos);
-CollisionInfo_Typedef getCollisionDown      (BlockInfoPack_Typedef *blocks_Info, uint16_t *vertex_Ypos, Vec2_Typedef position);
-BlockInfo_Typedef     getBlockInfo          (const CollisionMap_Typedef *map, Vec2_Typedef *vertex);
 
 #endif
 
