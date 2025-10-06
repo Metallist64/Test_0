@@ -20,7 +20,7 @@ typedef struct _level
     const uint16_t              startX;
     const uint16_t              startY;
     const MapDefinition         *nextMap;
-}Level_Typedef;
+}Level_Typedef, *pLevel_Typedef;
 
 typedef struct _block_info
 {
@@ -35,8 +35,8 @@ typedef struct _block_info
 
 void loadLevel(Level_Typedef *level);
 
-CollisionInfo_Typedef   getCollision        (Level_Typedef *level, Vec2_Typedef position, CollisionVec_Typedef collisionVector, uint16_t step);
-uint16_t                getCollisionByPoint (Level_Typedef *level, Vec2_Typedef point);
+uint16_t    getCollision        (Level_Typedef *level, Vec2_Typedef position, CollisionVec_Typedef collisionVector, uint16_t step);
+uint16_t    getCollisionByPoint (Level_Typedef *level, Vec2_Typedef point);
 
 extern BlockInfo_Typedef blocksInfo[] ;
 

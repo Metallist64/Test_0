@@ -23,6 +23,7 @@
         "player.h": "c",
         "collisions.h": "c",
         "common.h": "c",
-        "kdebug.h": "c"
+        "kdebug.h": "c",
+        "game.h": "c"
     }
 }

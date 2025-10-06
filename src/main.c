@@ -1,6 +1,6 @@
 
 #include <genesis.h>
-#include <kdebug.h>
+//#include <kdebug.h>
 #include "camera.h"
 #include "level.h"
 #include "level_0.h"
@@ -73,6 +73,8 @@ int main(bool hardReset)
     //Set palette for text messages
     VDP_setTextPalette(PAL0);
     loadLevel(&level_0);
+    
+
     PAL_setPalette(PAL2, player_sprite.palette->data, DMA);
 
     KDebug_Alert ("Game started");
@@ -86,13 +88,13 @@ int main(bool hardReset)
 
     while(1)
     {
-        game();
+        game.run();
        
         
         
         sprintf(str_0, "Camera X,Y = %04d, %04d", playerCamera.viewZone.left, playerCamera.viewZone.top);
         sprintf(str_1, "Position X,Y = %04d, %04d", player.globalPosition.x, player.globalPosition.y);
-        sprintf(str_2, "Buttons = %05d", player.state);
+        sprintf(str_2, "Player state = %05d", player.state);
 
         VDP_drawTextBG(BG_B, str_0, 0, 0);
         VDP_drawTextBG(BG_B, str_1, 0, 1);

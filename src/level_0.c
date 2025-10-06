@@ -90,8 +90,8 @@ Level_Typedef level_0 =
     .backgrounbd_A  = NULL,	
     .backgrounbd_B	= NULL, 
     .collisions  	= &level_0_collisions,
-    .startX         = 5160,
-    .startY         = 512, //656
+    .startX         = 20,
+    .startY         = 656, //656, 512
     .nextMap		= NULL,
 };
 

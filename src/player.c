@@ -1,12 +1,12 @@
   
+#include <genesis.h>
+#include <kdebug.h>
 #include "collisions.h"
 #include "player.h"
 #include "resources.h"
 
-#include "level_0.h" // Not good !!! Fix!!! It must be something like game.h that included all levels!
-
-#include <genesis.h>
-#include <kdebug.h>
+#include "level_0.h" 
+#include "game.h" 
 
 Player_Typedef player = 
 {
@@ -15,15 +15,16 @@ Player_Typedef player =
     .animState              = ANIM_STAY,
     .screenPosition         = {0,0},
     .globalPosition         = {0,0},
-    .collisionRectOffset    = {22,14},
+    .collisionRectOffset    = {22,15},
     .collisionRect          = {0,0,16,32},
     .relaxTimer             = 10,
     .health                 = 100,
     .state                  = 0,
     .jump.idx               = 0,
     .jump.state             = JMP_AWAITING,
-    .vertexPrevBlockIdx     = {0, 0,},
-    .gravity                = 2,    
+    //.vertexPrevBlockIdx     = {0, 0,},
+    .gravity                = 3,    
+    .movement               = 1,
 };
 
 const uint8_t jumpArray[] = {   2,2,2,2,2,2,2,2,
@@ -54,7 +55,6 @@ void playerAttack(void)
             if (SPR_isAnimationDone(player.sprite))
             {
                 player.state = PLAYER_STAY;       
-
             }
 
         break;
@@ -66,15 +66,12 @@ void playerAttack(void)
     }
 }
 
-
-
-
 uint32_t flag = 0;
 
 void playerJump(void)
 {
-    Vec2_Typedef            newPosition     = {player.globalPosition.x, player.globalPosition.y};
-    CollisionInfo_Typedef   collisionResult = {0};
+    Vec2_Typedef            newPosition         = {player.globalPosition.x, player.globalPosition.y};
+    uint16_t                noCollisionsSteps   = 0; 
     
      switch (player.jump.state)
      {
@@ -107,17 +104,13 @@ void playerJump(void)
 
         case JMP_GRAVITY:
 
-            //KDebug_Alert("Gravity case");
-            newPosition.y += 2; // Must be even
-            collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_DOWN, player.gravity);
-            
-            if(collisionResult.value)    
-            {
-                player.jump.state = JMP_AWAITING;
-                newPosition.y = collisionResult.alignedPositionY;
-                //KDebug_Alert("Gravity collision.");
-                //KDebug_AlertNumber(newPosition.y);                 
-            }
+            noCollisionsSteps = getCollision(game.pCurrentLevel, newPosition, COLLISION_VECTOR_DOWN, player.gravity);
+            player.jump.state = JMP_AWAITING;
+            newPosition.y += noCollisionsSteps;
+            //KDebug_AlertNumber(player.globalPosition.x);  
+            //KDebug_AlertNumber(player.globalPosition.y);  
+            //while (1);         
+
         break;            
 
         case JMP_RISE:
@@ -138,14 +131,14 @@ void playerJump(void)
         case JMP_FALL:
                 
                 KDebug_Alert("Fall case");
-                newPosition.y += 2;
-                //collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_DOWN);   
-                if(collisionResult.type == COLLISION_DOWN)                   
-                { 
-                    newPosition.y = collisionResult.alignedPositionY;
+                noCollisionsSteps = getCollision(game.pCurrentLevel, newPosition, COLLISION_VECTOR_DOWN, player.gravity);
+                newPosition.y += noCollisionsSteps;
+                if(noCollisionsSteps == 0)
+                {
                     player.state = PLAYER_STAY;
                     player.jump.state = JMP_AWAITING_RELEASE_BUTTON; 
                 }
+
         break;        
     }  
     player.globalPosition.y = newPosition.y;  
@@ -153,37 +146,30 @@ void playerJump(void)
 
 void playerMove(void)
 {
-
-    Vec2_Typedef newPosition = {player.globalPosition.x, player.globalPosition.y};
-    CollisionInfo_Typedef collisionResult = {COLLISION_NOT_FOUND, 0, 0};
+    Vec2_Typedef            newPosition         = {player.globalPosition.x, player.globalPosition.y};
+    uint16_t                noCollisionsSteps   = 0;    
     
-   if((player.input.buttons.Right) && (player.state != PLAYER_ATTACK))
+    if((player.input.buttons.Right) && (player.state != PLAYER_ATTACK))
     {
         if(newPosition.x < 5728)
         {
-         
-            //collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_RIGHT);
-            if(collisionResult.type != COLLISION_RIGHT)
-            {
-                newPosition.x++;       
-            }
+            noCollisionsSteps = getCollision(game.pCurrentLevel, newPosition, COLLISION_VECTOR_RIGHT, player.movement);
+            newPosition.x += noCollisionsSteps;
             player.direction = PLAYER_DIR_FORWARD;
+            if(player.state != PLAYER_JUMP) player.state = PLAYER_WALK;        
         } 
-        if(player.state != PLAYER_JUMP) player.state = PLAYER_WALK;
     }  
 
     if((player.input.buttons.Left) && (player.state != PLAYER_ATTACK))
     {
         if(newPosition.x > 0)
         {
-            //collisionResult = getCollision(level_0.collisions, newPosition, COLLISION_VECTOR_LEFT);
-            if(collisionResult.type != COLLISION_LEFT)
-            {
-                newPosition.x--;       
-            }
+            noCollisionsSteps = getCollision(game.pCurrentLevel, newPosition, COLLISION_VECTOR_LEFT, player.movement);
+            newPosition.x -= noCollisionsSteps;     
+            // if(noCollisionsSteps == 0)KDebug_Alert("Lefty collision");   
             player.direction = PLAYER_DIR_BACKWARD;
+            if(player.state != PLAYER_JUMP) player.state = PLAYER_WALK;        
         } 
-        if(player.state != PLAYER_JUMP) player.state = PLAYER_WALK;
     }     
     player.globalPosition.x = newPosition.x;
 }

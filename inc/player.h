@@ -97,6 +97,7 @@ typedef struct _player
     uint16_t                jumpPressed;
     Input_Typedef           input;
     uint16_t                gravity;
+    uint16_t                movement;
 }Player_Typedef;
 
 extern Player_Typedef player;

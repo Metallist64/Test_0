@@ -1,5 +1,6 @@
 
 #include <genesis.h>
+#include <kdebug.h>
 #include "level.h"
 #include "resources.h"
 #include "player.h"
@@ -101,6 +102,7 @@ void loadLevel(Level_Typedef *level)
     player.globalPosition.x = level->startX;
     player.globalPosition.y = level->startY;
 
+	
 	//Update the number of tiles filled in order to avoid overlaping them when loading more
 	//VDPTilesFilled += level_tileset.numTile;
 

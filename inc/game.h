@@ -1,6 +1,18 @@
 #ifndef GAME_H
 #define GAME_H
 
-void game(void);
+#include "level.h"
+
+
+typedef struct _game
+{
+    pLevel_Typedef  pCurrentLevel;
+    uint16_t        lives;
+    void            (*run)(void);
+}Game_Typedef;
+
+extern Game_Typedef game;
+
+void gameProcessing(void);
 
 #endif
