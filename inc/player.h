@@ -24,14 +24,15 @@ typedef enum _player_direction
     PLAYER_DIR_BACKWARD,    
 } PlayerDirection_Typedef;
 
-typedef enum    _player_animation  
+typedef enum  _player_animation  
 {
     ANIM_STAY,
     ANIM_WALK,
-    ANIM_ATACK,
-    ANIM_ATACK_2,
+    ANIM_ATTACK,
+    ANIM_ATTACK_2,
+    ANIM_KICK,
+    ANIM_ATTACK_3,
     ANIM_JUMP,
-    ANIM_SIT_LOW_ATACK,
     ANIM_SITBACK,
     ANIM_SIT_HI_ATACK,
     ANIM_FLY_ATACK,
@@ -41,6 +42,13 @@ typedef enum    _player_animation
     ANIM_WAKE,
     ANIM_SLEEP,
 } PlayerAnim_Typedef;
+
+typedef struct _attack
+{
+    uint16_t            attackIdx;                
+    uint16_t            attackStateIdx[2];                
+    PlayerState_Typedef attackState[2];
+}Attack_Typedef;
 
 typedef enum _player_jump_state
 {
@@ -98,9 +106,12 @@ typedef struct _player
     Input_Typedef           input;
     uint16_t                gravity;
     uint16_t                movement;
+    Attack_Typedef          attack;
+    
 }Player_Typedef;
 
 extern Player_Typedef player;
+
 
 void updatePlayerPosition(void);
 void playerGetButtons(void);

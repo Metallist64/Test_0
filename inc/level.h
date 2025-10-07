@@ -4,6 +4,7 @@
 
 #include <genesis.h>
 #include "collisions.h"
+#include "enemy.h"
 
 typedef struct _level
 {
@@ -19,6 +20,7 @@ typedef struct _level
     const CollisionMap_Typedef  *collisions;
     const uint16_t              startX;
     const uint16_t              startY;
+    Monsters_Typedef            *enemyList;
     const MapDefinition         *nextMap;
 }Level_Typedef, *pLevel_Typedef;
 
@@ -29,22 +31,22 @@ typedef struct _block_info
     uint16_t                    idx;
     CollisionVec_Typedef        collisionVectorMask;
     BlockType_Typedef           type;
-    uint16_t                    (*collisionHandler)(struct _block_info*, Vec2_Typedef*);
+    uint16_t                    (*collisionHandler)(struct _block_info*, Vec2_Typedef*, CollisionVec_Typedef);
 
 }BlockInfo_Typedef;
 
 void loadLevel(Level_Typedef *level);
 
 uint16_t    getCollision        (Level_Typedef *level, Vec2_Typedef position, CollisionVec_Typedef collisionVector, uint16_t step);
-uint16_t    getCollisionByPoint (Level_Typedef *level, Vec2_Typedef point);
+uint16_t    getCollisionByPoint (Level_Typedef *level, Vec2_Typedef point, CollisionVec_Typedef collisionVector);
 
 extern BlockInfo_Typedef blocksInfo[] ;
 
-extern uint16_t EmptyBlockHandler   (BlockInfo_Typedef*, Vec2_Typedef*);
-extern uint16_t SolidBlockHandler   (BlockInfo_Typedef*, Vec2_Typedef*);
-extern uint16_t SpikeBlockHandler   (BlockInfo_Typedef*, Vec2_Typedef*);
-extern uint16_t TimberBlockHandler  (BlockInfo_Typedef*, Vec2_Typedef*);
-extern uint16_t ShelfBlockHandler   (BlockInfo_Typedef*, Vec2_Typedef*);
+extern uint16_t EmptyBlockHandler   (BlockInfo_Typedef*, Vec2_Typedef*, CollisionVec_Typedef);
+extern uint16_t SolidBlockHandler   (BlockInfo_Typedef*, Vec2_Typedef*, CollisionVec_Typedef);
+extern uint16_t SpikeBlockHandler   (BlockInfo_Typedef*, Vec2_Typedef*, CollisionVec_Typedef);
+extern uint16_t TimberBlockHandler  (BlockInfo_Typedef*, Vec2_Typedef*, CollisionVec_Typedef);
+extern uint16_t ShelfBlockHandler   (BlockInfo_Typedef*, Vec2_Typedef*, CollisionVec_Typedef);
 
 
 

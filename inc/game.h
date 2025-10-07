@@ -6,7 +6,7 @@
 
 typedef struct _game
 {
-    pLevel_Typedef  pCurrentLevel;
+    pLevel_Typedef  currentLevel;
     uint16_t        lives;
     void            (*run)(void);
 }Game_Typedef;

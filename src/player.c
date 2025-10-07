@@ -22,21 +22,17 @@ Player_Typedef player =
     .state                  = 0,
     .jump.idx               = 0,
     .jump.state             = JMP_AWAITING,
-    //.vertexPrevBlockIdx     = {0, 0,},
-    .gravity                = 3,    
+    .gravity                = 2,    
     .movement               = 1,
+    .attack                 = { 0, {1, 0}, {PLAYER_ATTACK, PLAYER_ATTACK_2}},
 };
 
 const uint8_t jumpArray[] = {   2,2,2,2,2,2,2,2,
                                 2,2,2,2,2,2,2,2,
                                 1,1,0,0,0,0,0,0};
 
-
-
-
 void playerAttack(void)
 {
-    //Attack collision size 16*32
     switch (player.state)
     {
         case PLAYER_STAY:
@@ -44,13 +40,16 @@ void playerAttack(void)
 
             if(player.input.buttons.C)
             {
-                player.state = PLAYER_ATTACK;
-                player.animState = ANIM_ATACK;
+                player.attack.attackIdx = player.attack.attackStateIdx[player.attack.attackIdx];
+                player.state = player.attack.attackState[player.attack.attackIdx];
+                //KDebug_AlertNumber(player.attack.attackIdx); 
+                //KDebug_Alert("Attack");
             }
 
         break;
 
         case PLAYER_ATTACK:
+        case PLAYER_ATTACK_2:
         
             if (SPR_isAnimationDone(player.sprite))
             {
@@ -94,7 +93,7 @@ void playerJump(void)
             else 
             {
                 player.jump.state = JMP_GRAVITY;
-                if(player.state != PLAYER_ATTACK)
+                if((player.state != PLAYER_ATTACK) && (player.state != PLAYER_ATTACK_2))
                 {
                     player.state = PLAYER_STAY;                    
                 }
@@ -104,13 +103,12 @@ void playerJump(void)
 
         case JMP_GRAVITY:
 
-            noCollisionsSteps = getCollision(game.pCurrentLevel, newPosition, COLLISION_VECTOR_DOWN, player.gravity);
-            player.jump.state = JMP_AWAITING;
+            noCollisionsSteps = getCollision(game.currentLevel, newPosition, COLLISION_VECTOR_DOWN, player.gravity);
             newPosition.y += noCollisionsSteps;
-            //KDebug_AlertNumber(player.globalPosition.x);  
-            //KDebug_AlertNumber(player.globalPosition.y);  
-            //while (1);         
-
+            if(noCollisionsSteps == 0)
+            {
+                player.jump.state = JMP_AWAITING;
+            }
         break;            
 
         case JMP_RISE:
@@ -130,8 +128,7 @@ void playerJump(void)
 
         case JMP_FALL:
                 
-                KDebug_Alert("Fall case");
-                noCollisionsSteps = getCollision(game.pCurrentLevel, newPosition, COLLISION_VECTOR_DOWN, player.gravity);
+                noCollisionsSteps = getCollision(game.currentLevel, newPosition, COLLISION_VECTOR_DOWN, player.gravity);
                 newPosition.y += noCollisionsSteps;
                 if(noCollisionsSteps == 0)
                 {
@@ -153,7 +150,7 @@ void playerMove(void)
     {
         if(newPosition.x < 5728)
         {
-            noCollisionsSteps = getCollision(game.pCurrentLevel, newPosition, COLLISION_VECTOR_RIGHT, player.movement);
+            noCollisionsSteps = getCollision(game.currentLevel, newPosition, COLLISION_VECTOR_RIGHT, player.movement);
             newPosition.x += noCollisionsSteps;
             player.direction = PLAYER_DIR_FORWARD;
             if(player.state != PLAYER_JUMP) player.state = PLAYER_WALK;        
@@ -164,9 +161,8 @@ void playerMove(void)
     {
         if(newPosition.x > 0)
         {
-            noCollisionsSteps = getCollision(game.pCurrentLevel, newPosition, COLLISION_VECTOR_LEFT, player.movement);
+            noCollisionsSteps = getCollision(game.currentLevel, newPosition, COLLISION_VECTOR_LEFT, player.movement);
             newPosition.x -= noCollisionsSteps;     
-            // if(noCollisionsSteps == 0)KDebug_Alert("Lefty collision");   
             player.direction = PLAYER_DIR_BACKWARD;
             if(player.state != PLAYER_JUMP) player.state = PLAYER_WALK;        
         } 
@@ -178,32 +174,19 @@ void playerDraw(void)
 {
     switch (player.state)
     {
-        case PLAYER_STAY:
-            player.animState = ANIM_STAY;
-        break;
-
-        case PLAYER_WALK:
-            player.animState = ANIM_WALK;
-        break;        
-        
-        case PLAYER_JUMP:
-            player.animState = ANIM_JUMP;
-        break;
-        
-        case PLAYER_ATTACK:
-            player.animState = ANIM_ATACK;
-        break;
-
-        case PLAYER_DIE:
-            player.animState = ANIM_DEATH;
-        break;        
+        case PLAYER_STAY:       player.animState = ANIM_STAY;       break;
+        case PLAYER_WALK:       player.animState = ANIM_WALK;       break;        
+        case PLAYER_JUMP:       player.animState = ANIM_JUMP;       break;
+        case PLAYER_ATTACK:     player.animState = ANIM_ATTACK;     break;        
+        case PLAYER_ATTACK_2:   player.animState = ANIM_ATTACK_2;   break;        
+        case PLAYER_DIE:        player.animState = ANIM_DEATH;      break;        
 
         default:
 
             //player.animState = ANIM_STAY;
 
         break;
-        }
+    }
 
     if(player.direction == PLAYER_DIR_FORWARD)  SPR_setHFlip(player.sprite, FALSE);
     else                                        SPR_setHFlip(player.sprite, TRUE);

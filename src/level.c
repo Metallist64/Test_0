@@ -4,6 +4,7 @@
 #include "level.h"
 #include "resources.h"
 #include "player.h"
+#include "game.h"
 
 
 #define PLAYER_PALETTE PAL2
@@ -14,6 +15,7 @@ u16 VDPTilesFilled = TILE_USER_INDEX;
 //Map *backgroubd_A;
 
 
+
 BlockInfo_Typedef blocksInfo[] = {
 
     {
@@ -21,6 +23,7 @@ BlockInfo_Typedef blocksInfo[] = {
         .groundLevel    	= 0,
         .type           	= BLOCK_EMPTY,
 		.collisionHandler	= EmptyBlockHandler,
+		.collisionVectorMask = COLLISION_VECTOR_NOT_USED,
     },
 
     {
@@ -28,13 +31,15 @@ BlockInfo_Typedef blocksInfo[] = {
         .groundLevel    	= 0,
         .type           	= BLOCK_SOLID,
 		.collisionHandler	= SolidBlockHandler,
+		.collisionVectorMask = COLLISION_VECTOR_ALL,
     },
 
     {
         .damage		    	= 15,
-        .groundLevel    	= 14,
-        .type           	= BLOCK_SPIKE,
+        .groundLevel    	= 0,
+        .type           	= BLOCK_EMPTY,
 		.collisionHandler	= SpikeBlockHandler,
+		.collisionVectorMask = COLLISION_VECTOR_DOWN,
     },
 
     {
@@ -42,6 +47,7 @@ BlockInfo_Typedef blocksInfo[] = {
         .groundLevel    	= 8,
         .type           	= BLOCK_TIMBER,
 		.collisionHandler	= TimberBlockHandler,
+		.collisionVectorMask = COLLISION_VECTOR_ALL,
     },
 
     {
@@ -49,43 +55,54 @@ BlockInfo_Typedef blocksInfo[] = {
         .groundLevel    	= 0,
         .type           	= BLOCK_SHELF,
 		.collisionHandler	= ShelfBlockHandler,
+		.collisionVectorMask = COLLISION_VECTOR_DOWN,
     },
 
 };
 
-uint16_t EmptyBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point)
+uint16_t EmptyBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point, CollisionVec_Typedef collisionVector)
 {
 	uint16_t result = false;
 
 	return result;
 };
 
-uint16_t SolidBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point)
+uint16_t SolidBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point, CollisionVec_Typedef collisionVector)
 {
 	uint16_t result = true;
 	
 	return result;
 };
 
-uint16_t SpikeBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point)
+uint16_t SpikeBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point, CollisionVec_Typedef collisionVector)
 {
-	uint16_t result = true;
+	uint16_t result = false;
 	
 	return result;
 };
 
-uint16_t TimberBlockHandler  (BlockInfo_Typedef *block, Vec2_Typedef* point)
+uint16_t TimberBlockHandler  (BlockInfo_Typedef *block, Vec2_Typedef* point, CollisionVec_Typedef collisionVector)
 {
-	uint16_t result = true;
-	//(vertex_Ypos[1] >= blocks_Info->data[1].groundLevel)
-	//vertex_Ypos[1]  = vertex[3].y % map->gridStep;     
+	uint16_t result = false;
+	uint16_t blockYoffset = point->y % game.currentLevel->collisions->gridStep;     
+	if(blockYoffset >= block->groundLevel)
+	{
+		result = true;
+	}
+
 	return result;
 };
 
-uint16_t ShelfBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point)
+uint16_t ShelfBlockHandler   (BlockInfo_Typedef *block, Vec2_Typedef* point, CollisionVec_Typedef collisionVector)
 {
-	uint16_t result = true;
-	
+	uint16_t result = false;
+	uint16_t blockYoffset = point->y % game.currentLevel->collisions->gridStep;     
+
+	if((collisionVector == COLLISION_VECTOR_DOWN) && (blockYoffset == 0))
+	{
+		result = true;
+	}
+
 	return result;
 };
 

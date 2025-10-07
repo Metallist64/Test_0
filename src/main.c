@@ -1,12 +1,13 @@
 
 #include <genesis.h>
-//#include <kdebug.h>
+#include <kdebug.h>
 #include "camera.h"
 #include "level.h"
 #include "level_0.h"
 #include "resources.h"
 #include "player.h"
 #include "game.h"
+#include "goblin.h"
 
 typedef enum
 {
@@ -17,10 +18,13 @@ typedef enum
     GAME_OVER,
 } GameState_Typedef;
 
+/*
 const TileSet *tile_anim[] =
     {
         &animated_tileset_frame_0,
     };
+*/
+
 
 s16 frameTicks;
 s16 tileFrameIndex;
@@ -49,7 +53,7 @@ void TilesAnimationUpdate()
         //VDP_loadTileSet(tile_anim[tileFrameIndex], level_0.backgrounbd_A->baseTile, DMA);
     }
     //0 - plane B
-     VDP_loadTileSet(tile_anim[0], TILE_USER_INDEX + TILE_DST, DMA);
+     //VDP_loadTileSet(tile_anim[0], TILE_USER_INDEX + TILE_DST, DMA);
 }    
 
 
@@ -74,23 +78,31 @@ int main(bool hardReset)
     VDP_setTextPalette(PAL0);
     loadLevel(&level_0);
     
-
+    PAL_setPalette(PAL3, orange_goblin_sprite.palette->data, DMA);
     PAL_setPalette(PAL2, player_sprite.palette->data, DMA);
+    
 
     KDebug_Alert ("Game started");
 
     player.sprite = SPR_addSprite(player.spriteDef, 0, player.globalPosition.y, TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
     SPR_setAnim(player.sprite, ANIM_STAY);
 
+    //enemy.init();
+    enemyInit();
+    
+    
+    //SPR_setAnim(goblins[0].sprite, ANIM_WALK);
+    //SPR_setPosition(goblins[0].sprite, goblins[0].globalPosition.x, goblins[0].globalPosition.y);
+    
+
+    //SPR_releaseSprite(Sprite* sprite);
     //TilesAnimationUpdate();
      
-    VDP_loadTileSet(tile_anim[0], TILE_USER_INDEX + TILE_DST, DMA);
+    //VDP_loadTileSet(tile_anim[0], TILE_USER_INDEX + TILE_DST, DMA);
 
     while(1)
     {
         game.run();
-       
-        
         
         sprintf(str_0, "Camera X,Y = %04d, %04d", playerCamera.viewZone.left, playerCamera.viewZone.top);
         sprintf(str_1, "Position X,Y = %04d, %04d", player.globalPosition.x, player.globalPosition.y);

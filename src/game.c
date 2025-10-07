@@ -1,13 +1,14 @@
 #include <genesis.h>
 #include <kdebug.h>
 #include "camera.h"
+#include "enemy.h"
 #include "game.h"
 #include "player.h"
 #include "level_0.h"
 
 Game_Typedef game =
 {
-    .pCurrentLevel   = &level_0,
+    .currentLevel   = &level_0,
     .run             = gameProcessing,
     .lives           = 3,   
 };
@@ -20,4 +21,6 @@ void gameProcessing(void)
     playerAttack();
     updateCamera();
     playerDraw();
+    enemyDraw();
+
 }

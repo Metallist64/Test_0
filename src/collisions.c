@@ -85,10 +85,10 @@ uint16_t getCollision(Level_Typedef *level, Vec2_Typedef position, CollisionVec_
         checkVertex[0].x += operatorX; checkVertex[0].y += operatorY;
         checkVertex[1].x += operatorX; checkVertex[1].y += operatorY; 
 
-        collisionFound = getCollisionByPoint(level, checkVertex[0]);
+        collisionFound = getCollisionByPoint(level, checkVertex[0], collisionVector);
         if(collisionFound == false)
         {
-            collisionFound = getCollisionByPoint(level, checkVertex[1]);
+            collisionFound = getCollisionByPoint(level, checkVertex[1], collisionVector);
         }
        
         if(collisionFound)
@@ -108,22 +108,12 @@ uint16_t getCollision(Level_Typedef *level, Vec2_Typedef position, CollisionVec_
     return noCollisionSteps;
 }
  
-uint16_t  getCollisionByPoint(pLevel_Typedef level, Vec2_Typedef point)
+uint16_t  getCollisionByPoint(pLevel_Typedef level, Vec2_Typedef point, CollisionVec_Typedef collisionVector)
 {
-    //(vertex->y /map->gridStep) * map->width + vertex->x / map->gridStep;
     uint16_t            blockIdx    = (point.y /level->collisions->gridStep) * level->collisions->width + point.x / level->collisions->gridStep;     
     const uint8_t       blockData   = level->collisions->data[blockIdx];
     BlockInfo_Typedef   blockInfo   = blocksInfo[blockData];
-    uint16_t            result      = blockInfo.collisionHandler(&blockInfo, &point);
-
-    //if(collisionVector == COLLISION_VECTOR_DOWN) KDebug_Alert("pass ++");
-    KDebug_AlertNumber(level->width);  
-    //KDebug_AlertNumber(point.y);  
-    //KDebug_AlertNumber(level->collisions->gridStep);  
-
-    //while (1);
-   
-
+    uint16_t            result      = blockInfo.collisionHandler(&blockInfo, &point, collisionVector);
     return result;
 }
 

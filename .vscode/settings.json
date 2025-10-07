@@ -24,6 +24,8 @@
         "collisions.h": "c",
         "common.h": "c",
         "kdebug.h": "c",
-        "game.h": "c"
+        "game.h": "c",
+        "enemy.h": "c",
+        "goblin.h": "c"
     }
 }
