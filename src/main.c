@@ -76,28 +76,21 @@ int main(bool hardReset)
     SPR_init();
     //Set palette for text messages
     VDP_setTextPalette(PAL0);
-    loadLevel(&level_0);
+    
     
     PAL_setPalette(PAL3, orange_goblin_sprite.palette->data, DMA);
     PAL_setPalette(PAL2, player_sprite.palette->data, DMA);
-    
-
     KDebug_Alert ("Game started");
 
-    player.sprite = SPR_addSprite(player.spriteDef, 0, player.globalPosition.y, TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
-    SPR_setAnim(player.sprite, ANIM_STAY);
-
-    //enemy.init();
-    enemyInit();
-    
+    //enemyInit();
     
     //SPR_setAnim(goblins[0].sprite, ANIM_WALK);
     //SPR_setPosition(goblins[0].sprite, goblins[0].globalPosition.x, goblins[0].globalPosition.y);
-    
 
     //SPR_releaseSprite(Sprite* sprite);
     //TilesAnimationUpdate();
-     
+
+    loadLevel(&level_0);
     //VDP_loadTileSet(tile_anim[0], TILE_USER_INDEX + TILE_DST, DMA);
 
     while(1)

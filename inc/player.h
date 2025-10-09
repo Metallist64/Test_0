@@ -1,9 +1,11 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <genesis.h>
+#include "level.h"
 #include "collisions.h"
 #include "common.h"
-#include <genesis.h>
+
 
 
 // Player state enumeration
@@ -98,6 +100,8 @@ typedef struct _player
     Vec2_Typedef            screenPosition;
     Vec2_Typedef            collisionRectOffset;
     RECT_Typedef            collisionRect;
+    Vec2_Typedef            attackCollisionRectOffset;    
+    RECT_Typedef            attackCollisionRect;
     uint16_t                relaxTimer;
     uint16_t                health;
     Jump_Typedef            jump;
@@ -107,18 +111,19 @@ typedef struct _player
     uint16_t                gravity;
     uint16_t                movement;
     Attack_Typedef          attack;
+    void                    (*init) (Level_Typedef*);
     
 }Player_Typedef;
 
 extern Player_Typedef player;
 
-
-void updatePlayerPosition(void);
-void playerGetButtons(void);
-void playerDraw(void);
-void playerJump(void);
-void playerMove(void);
-void playerAttack(void);
-uint16_t roundYposition(uint16_t);
+void        playerInit(Level_Typedef *level);
+void        updatePlayerPosition(void);
+void        playerGetButtons(void);
+void        playerDraw(void);
+void        playerJump(void);
+void        playerMove(void);
+void        playerAttack(void);
+uint16_t    roundYposition(uint16_t);
 
 #endif

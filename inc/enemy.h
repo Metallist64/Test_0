@@ -4,15 +4,31 @@
 #include "goblin.h"
 
 
-void enemyDraw(void);
-void enemyInit(void);
-void enemyDrawLocal(Goblin_Typedef *goblin);
 
-typedef struct _monsters
+typedef struct _enemy_list
 {
-    Goblin_Typedef *listGoblins;
-    uint16_t        goblinsCnt;
+    GoblinsList_Typedef *goblinsList;
 
-}Monsters_Typedef;
+}EnemyList_Typedef, *EnemyCurrentList_Typedef;
+
+typedef void (*EnemyInitHandler)    (EnemyList_Typedef*);
+typedef void (*EnemyDrawHandler)    (EnemyList_Typedef*);
+typedef void (*EnemyThinkHandler)   (EnemyList_Typedef*);
+
+void enemyInit  (EnemyList_Typedef *enemyList);
+void enemyDraw  (EnemyList_Typedef *enemyList);
+void enemyThink (EnemyList_Typedef *enemyList);
+
+
+
+typedef struct _enemy
+{
+    EnemyInitHandler    init;    
+    EnemyDrawHandler    draw;  
+    EnemyThinkHandler   think;  
+
+}Enemy_Typedef;
+
+extern Enemy_Typedef enemy;
 
 #endif

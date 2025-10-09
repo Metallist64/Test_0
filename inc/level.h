@@ -20,7 +20,7 @@ typedef struct _level
     const CollisionMap_Typedef  *collisions;
     const uint16_t              startX;
     const uint16_t              startY;
-    Monsters_Typedef            *enemyList;
+    EnemyList_Typedef           *enemyList;
     const MapDefinition         *nextMap;
 }Level_Typedef, *pLevel_Typedef;
 

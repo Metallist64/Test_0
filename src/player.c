@@ -10,13 +10,17 @@
 
 Player_Typedef player = 
 {
-    .spriteDef              = &player_sprite,
-    .sprite                 = NULL,
-    .animState              = ANIM_STAY,
-    .screenPosition         = {0,0},
-    .globalPosition         = {0,0},
-    .collisionRectOffset    = {22,15},
-    .collisionRect          = {0,0,16,32},
+    .spriteDef                  = &player_sprite,
+    .sprite                     = NULL,
+    .animState                  = ANIM_STAY,
+    .screenPosition             = {0, 0},
+    .globalPosition             = {0, 0},
+    .collisionRectOffset        = {22, 15},
+    .collisionRect              = {0, 0, 16, 32},
+
+    .attackCollisionRectOffset  = {32, 15},    
+    .attackCollisionRect        = {0, 0, 16, 32},
+
     .relaxTimer             = 10,
     .health                 = 100,
     .state                  = 0,
@@ -25,11 +29,25 @@ Player_Typedef player =
     .gravity                = 2,    
     .movement               = 1,
     .attack                 = { 0, {1, 0}, {PLAYER_ATTACK, PLAYER_ATTACK_2}},
+    .init                   = playerInit,
 };
 
 const uint8_t jumpArray[] = {   2,2,2,2,2,2,2,2,
                                 2,2,2,2,2,2,2,2,
                                 1,1,0,0,0,0,0,0};
+
+
+void playerInit(Level_Typedef *level)
+{
+    player.globalPosition.x = level->startX;
+    player.globalPosition.y = level->startY;
+    player.sprite = SPR_addSprite(player.spriteDef, player.globalPosition.x, player.globalPosition.y, TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
+    SPR_setAnim(player.sprite, ANIM_STAY);
+    //KDebug_Alert("Player position:");
+    //KDebug_AlertNumber(player.attack.attackIdx); 
+    //KDebug_AlertNumber(player.attack.attackIdx); 
+}
+  
 
 void playerAttack(void)
 {
@@ -50,7 +68,13 @@ void playerAttack(void)
 
         case PLAYER_ATTACK:
         case PLAYER_ATTACK_2:
-        
+            
+            if((player.sprite->frameInd == 2) || (player.sprite->frameInd == 3))
+            {
+                //check attack collision
+            }   
+            //KDebug_AlertNumber(player.sprite->frameInd); 
+
             if (SPR_isAnimationDone(player.sprite))
             {
                 player.state = PLAYER_STAY;       

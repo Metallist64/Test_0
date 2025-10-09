@@ -21,6 +21,7 @@ void gameProcessing(void)
     playerAttack();
     updateCamera();
     playerDraw();
-    enemyDraw();
+    enemy.think(&enemyListLevel_0);
+    enemy.draw(&enemyListLevel_0);
 
 }

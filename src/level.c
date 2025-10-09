@@ -1,11 +1,12 @@
 
 #include <genesis.h>
 #include <kdebug.h>
-#include "level.h"
-#include "resources.h"
-#include "player.h"
+#include "enemy.h"
 #include "game.h"
-
+#include "level.h"
+#include "level_0.h"
+#include "player.h"
+#include "resources.h"
 
 #define PLAYER_PALETTE PAL2
 #define LEVEL_PALETTE PAL1
@@ -116,9 +117,8 @@ void loadLevel(Level_Typedef *level)
 	//Create map for 
 	level->backgrounbd_A = MAP_create(level->map, TILEMAP_PLANE, TILE_ATTR_FULL(LEVEL_PALETTE, FALSE, FALSE, FALSE, VDPTilesFilled));
 
-    player.globalPosition.x = level->startX;
-    player.globalPosition.y = level->startY;
-
+	player.init(level);
+	enemy.init(&enemyListLevel_0);
 	
 	//Update the number of tiles filled in order to avoid overlaping them when loading more
 	//VDPTilesFilled += level_tileset.numTile;

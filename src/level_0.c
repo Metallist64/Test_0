@@ -85,8 +85,13 @@ Level_Typedef level_0 =
     .startX         = 20, //
     .startY         = 656, //656, 512
     .nextMap		= NULL,
-    .enemyList      = &Level_0_EnemyList,
+    .enemyList      = &enemyListLevel_0,
 };
+
+ EnemyList_Typedef enemyListLevel_0 =
+ {
+    .goblinsList = &goblinsListLevel_0,
+ };
 
 Goblin_Typedef goblinsLevel_0[] = 
 {
@@ -97,9 +102,13 @@ Goblin_Typedef goblinsLevel_0[] =
         .direction      = GOBLIN_DIR_FORWARD,
         .state          = GOBLIN_THINK,
         .movement       = 1,  
-        .globalPosition = {336, 672},     
+        .globalPosition = {336, 672},   
+        .collisionBox   = {16, 0, 32, 32},  
+        .thinkTicks     = 5,
+        .thinkTicksCnt  = 5,
     },
 
+/*
     {
         .spriteDef      = &orange_goblin_sprite,
         .sprite         = NULL,       
@@ -108,8 +117,10 @@ Goblin_Typedef goblinsLevel_0[] =
         .state          = GOBLIN_THINK,
         .movement       = 1,  
         .globalPosition = {460, 672},     
+        .collisionBox   = {16, 0, 32, 32},  
     },
 
+    
     {
         .spriteDef      = &orange_goblin_sprite,
         .sprite         = NULL,       
@@ -329,11 +340,11 @@ Goblin_Typedef goblinsLevel_0[] =
         .movement       = 1,  
         .globalPosition = {4660, 656},     
     },     
-    
+    */
 };
 
-Monsters_Typedef Level_0_EnemyList = 
-{
-    .listGoblins    = goblinsLevel_0,
-    .goblinsCnt     = sizeof goblinsLevel_0 / sizeof (Goblin_Typedef),
-};
+ GoblinsList_Typedef goblinsListLevel_0 =
+ {
+    .list   =  goblinsLevel_0,
+    .cnt    = sizeof goblinsLevel_0 / sizeof(Goblin_Typedef),
+ };
