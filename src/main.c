@@ -93,6 +93,10 @@ int main(bool hardReset)
     loadLevel(&level_0);
     //VDP_loadTileSet(tile_anim[0], TILE_USER_INDEX + TILE_DST, DMA);
 
+    //typedef void FrameChangeCallback(Sprite* sprite);
+
+    SPR_setFrameChangeCallback(player.sprite, myCallback);
+
     while(1)
     {
         game.run();

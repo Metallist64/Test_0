@@ -2,6 +2,7 @@
 #include <genesis.h>
 #include <kdebug.h>
 #include "collisions.h"
+#include "goblin.h"
 #include "player.h"
 #include "resources.h"
 
@@ -48,6 +49,41 @@ void playerInit(Level_Typedef *level)
     //KDebug_AlertNumber(player.attack.attackIdx); 
 }
   
+//typedef void FrameChangeCallback(Sprite* sprite);
+
+void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
+{
+    GoblinsList_Typedef *goblinList = enemyList->goblinsList;
+    CollisionBox_Typedef PlayerCollisionBox = createCollisionBox(player->globalPosition, player->attackCollisionRect, player->attackCollisionRectOffset);
+    CollisionBox_Typedef gobliCollisionBox  = {
+                                                .vertex[0] = {0, 0},
+                                                .vertex[1] = {0, 0},
+                                                .vertex[2] = {0, 0},
+                                                .vertex[3] = {0, 0},
+                                              };
+    
+    for(uint16_t goblinIdx = 0; goblinIdx < goblinList->cnt; goblinIdx++)
+    {
+        gobliCollisionBox = createCollisionBox(goblinList->list[goblinIdx].globalPosition,
+                                               goblinList->list[goblinIdx].collisionRect,
+                                               goblinList->list[goblinIdx].collisionRectOffset);
+
+        checkBoxCollision(player->attackCollisionRect, enemyList->goblinsList->list[0].collisionBox);            
+
+       
+
+    } 
+    
+    
+
+
+
+              
+
+   // enemyList->goblinsList
+
+
+}
 
 void playerAttack(void)
 {
@@ -71,9 +107,13 @@ void playerAttack(void)
             
             if((player.sprite->frameInd == 2) || (player.sprite->frameInd == 3))
             {
-                //check attack collision
+                
+                
+
+
+
             }   
-            //KDebug_AlertNumber(player.sprite->frameInd); 
+            
 
             if (SPR_isAnimationDone(player.sprite))
             {

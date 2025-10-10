@@ -26,6 +26,7 @@
         "kdebug.h": "c",
         "game.h": "c",
         "enemy.h": "c",
-        "goblin.h": "c"
+        "goblin.h": "c",
+        "damage.h": "c"
     }
 }

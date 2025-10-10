@@ -39,7 +39,8 @@ typedef struct _goblin
     GoblinState_Typedef     state;    
     uint16_t                movement;
     Vec2_Typedef            globalPosition;
-    RECT_Typedef            collisionBox;
+    RECT_Typedef            collisionRect;
+    Vec2_Typedef            collisionRectOffset;    
     uint16_t                thinkTicks;
     uint16_t                thinkTicksCnt;
     GoblinAnim_Typedef      animState;       
@@ -56,4 +57,5 @@ void goblinsInit    (GoblinsList_Typedef    *goblinsList);
 void goblinThink    (Goblin_Typedef         *goblin);
 void goblinsThink   (GoblinsList_Typedef    *goblinsList);
 void goblinsDraw    (GoblinsList_Typedef    *goblinsList);
+
 #endif

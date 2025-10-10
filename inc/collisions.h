@@ -52,7 +52,19 @@ typedef struct _collision_result
     uint16_t   successPasses;
     uint16_t   value;
     uint8_t    vertex[2];
+
 }CollisionInfo_Typedef;
+
+typedef struct _collisionBox
+{
+    Vec2_Typedef vertex[4];
+    
+}CollisionBox_Typedef;
+
+CollisionBox_Typedef    createCollisionBox          (Vec2_Typedef position, RECT_Typedef collisionRect, Vec2_Typedef collisionRectOffset);
+uint16_t                checkBoxCollision           (CollisionBox_Typedef zone_0, CollisionBox_Typedef zone_1);
+uint16_t                checkCollisionBoxByPoint    (CollisionBox_Typedef box, Vec2_Typedef point);
+
 
 #endif
 

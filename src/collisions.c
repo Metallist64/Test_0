@@ -9,6 +9,43 @@ char strDbg[64];
 
 extern uint32_t flag;
 
+CollisionBox_Typedef createCollisionBox(Vec2_Typedef position, RECT_Typedef collisionRect, Vec2_Typedef collisionRectOffset)
+{
+    CollisionBox_Typedef result = 
+    {
+       .vertex[0] = { position.x + collisionRectOffset.x,                       position.y + collisionRectOffset.y },                           // Rectangle vertex 0 
+       .vertex[1] = { position.x + collisionRectOffset.x + collisionRect.right,  position.y + collisionRectOffset.y },                          // Rectangle vertex 1
+       .vertex[2] = { position.x + collisionRectOffset.x + collisionRect.right,  position.y + collisionRectOffset.y + collisionRect.bottom },   // Rectangle vertex 2
+       .vertex[3] = { position.x + collisionRectOffset.x,                        position.y + collisionRectOffset.y + collisionRect.bottom },   // Rectangle vertex 3   
+   };
+    
+    return result;
+}
+
+uint16_t checkBoxCollision (CollisionBox_Typedef boxMain, CollisionBox_Typedef boxSlave)
+{
+    uint16_t                result = false;
+    uint16_t                vertexCollisinResult = 0;
+    
+    for(uint16_t i = 0; i < 4; i++)
+    {
+        result += checkCollisionBoxByPoint (boxMain, boxSlave.vertex[i]);
+    }
+
+    return result;
+}
+
+uint16_t checkCollisionBoxByPoint(CollisionBox_Typedef box, Vec2_Typedef point)
+{
+    uint16_t result = false;
+
+    if( point.x >= box.vertex[0].x && point.x <= box.vertex[1].x && point.y >=  box.vertex[1].y && point.y <= box.vertex[2].y)
+    {
+        result = true;
+    }
+    return result;
+}
+
 uint16_t getCollision(Level_Typedef *level, Vec2_Typedef position, CollisionVec_Typedef collisionVector, uint16_t step)
 {
     uint16_t        collisionFound      = false;
@@ -17,15 +54,7 @@ uint16_t getCollision(Level_Typedef *level, Vec2_Typedef position, CollisionVec_
     int16_t         operatorX            =  0;
     int16_t         operatorY            =  0;
     
-    Vec2_Typedef vertexPlayer[4]    = {                                                                                  // CW order       
-        { position.x + player.collisionRectOffset.x,                               position.y + player.collisionRectOffset.y },    // Rectangle vertex 0 
-        { position.x + player.collisionRectOffset.x + player.collisionRect.right,  position.y + player.collisionRectOffset.y },    // Rectangle vertex 1
-        { position.x + player.collisionRectOffset.x + player.collisionRect.right,  position.y + player.collisionRectOffset.y + player.collisionRect.bottom },    // Rectangle vertex 2
-        { position.x + player.collisionRectOffset.x,                               position.y + player.collisionRectOffset.y + player.collisionRect.bottom },    // Rectangle vertex 3        
-    };
-
-     //KDebug_Alert("Collision type:"); 
-     
+    CollisionBox_Typedef PlayerCollisionBox = createCollisionBox(position, player.collisionRect, player.collisionRectOffset);
 
     switch (collisionVector)
     {
@@ -42,11 +71,11 @@ uint16_t getCollision(Level_Typedef *level, Vec2_Typedef position, CollisionVec_
 
         case COLLISION_VECTOR_DOWN:     
 
-            checkVertex[0].x = vertexPlayer[2].x;
-            checkVertex[0].y = vertexPlayer[2].y;
+            checkVertex[0].x = PlayerCollisionBox.vertex[2].x;
+            checkVertex[0].y = PlayerCollisionBox.vertex[2].y;
 
-            checkVertex[1].x = vertexPlayer[3].x;
-            checkVertex[1].y = vertexPlayer[3].y;
+            checkVertex[1].x = PlayerCollisionBox.vertex[3].x;
+            checkVertex[1].y = PlayerCollisionBox.vertex[3].y;
 
             operatorX = 0;
             operatorY = 1;
@@ -55,11 +84,11 @@ uint16_t getCollision(Level_Typedef *level, Vec2_Typedef position, CollisionVec_
 
         case COLLISION_VECTOR_RIGHT:    
 
-            checkVertex[0].x = vertexPlayer[1].x;
-            checkVertex[0].y = vertexPlayer[1].y;
+            checkVertex[0].x = PlayerCollisionBox.vertex[1].x;
+            checkVertex[0].y = PlayerCollisionBox.vertex[1].y;
 
-            checkVertex[1].x = vertexPlayer[2].x;
-            checkVertex[1].y = vertexPlayer[2].y;
+            checkVertex[1].x = PlayerCollisionBox.vertex[2].x;
+            checkVertex[1].y = PlayerCollisionBox.vertex[2].y;
             
             operatorX = 1;
             operatorY = 0;
@@ -68,11 +97,11 @@ uint16_t getCollision(Level_Typedef *level, Vec2_Typedef position, CollisionVec_
 
         case COLLISION_VECTOR_LEFT:  
 
-            checkVertex[0].x = vertexPlayer[0].x;
-            checkVertex[0].y = vertexPlayer[0].y;
+            checkVertex[0].x = PlayerCollisionBox.vertex[0].x;
+            checkVertex[0].y = PlayerCollisionBox.vertex[0].y;
 
-            checkVertex[1].x = vertexPlayer[3].x;
-            checkVertex[1].y = vertexPlayer[3].y;
+            checkVertex[1].x = PlayerCollisionBox.vertex[3].x;
+            checkVertex[1].y = PlayerCollisionBox.vertex[3].y;
             
             operatorX = -1;
             operatorY = 0;
@@ -103,7 +132,7 @@ uint16_t getCollision(Level_Typedef *level, Vec2_Typedef position, CollisionVec_
    
 
     //KDebug_Alert("Collision rectangle:");
-//    if(collisionVector == COLLISION_VECTOR_DOWN)  KDebug_AlertNumber(noCollisionSteps);    
+    //if(collisionVector == COLLISION_VECTOR_DOWN)  KDebug_AlertNumber(noCollisionSteps);    
     
     return noCollisionSteps;
 }
