@@ -9,14 +9,14 @@ char strDbg[64];
 
 extern uint32_t flag;
 
-CollisionBox_Typedef createCollisionBox(Vec2_Typedef position, RECT_Typedef collisionRect, Vec2_Typedef collisionRectOffset)
+CollisionBox_Typedef createCollisionBox(Vec2_Typedef position, RECT_Typedef collisionRect)
 {
     CollisionBox_Typedef result = 
     {
-       .vertex[0] = { position.x + collisionRectOffset.x,                       position.y + collisionRectOffset.y },                           // Rectangle vertex 0 
-       .vertex[1] = { position.x + collisionRectOffset.x + collisionRect.right,  position.y + collisionRectOffset.y },                          // Rectangle vertex 1
-       .vertex[2] = { position.x + collisionRectOffset.x + collisionRect.right,  position.y + collisionRectOffset.y + collisionRect.bottom },   // Rectangle vertex 2
-       .vertex[3] = { position.x + collisionRectOffset.x,                        position.y + collisionRectOffset.y + collisionRect.bottom },   // Rectangle vertex 3   
+       .vertex[0] = { position.x + collisionRect.left,      position.y + collisionRect.top      },   // Rectangle vertex 0 
+       .vertex[1] = { position.x + collisionRect.right,     position.y + collisionRect.top      },   // Rectangle vertex 1
+       .vertex[2] = { position.x + collisionRect.right,     position.y + collisionRect.bottom   },   // Rectangle vertex 2
+       .vertex[3] = { position.x + collisionRect.left,      position.y + collisionRect.bottom },   // Rectangle vertex 3   
    };
     
     return result;
@@ -54,7 +54,7 @@ uint16_t getCollision(Level_Typedef *level, Vec2_Typedef position, CollisionVec_
     int16_t         operatorX            =  0;
     int16_t         operatorY            =  0;
     
-    CollisionBox_Typedef PlayerCollisionBox = createCollisionBox(position, player.collisionRect, player.collisionRectOffset);
+    CollisionBox_Typedef PlayerCollisionBox = createCollisionBox(position, player.collisionRect);
 
     switch (collisionVector)
     {

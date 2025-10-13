@@ -16,12 +16,8 @@ Player_Typedef player =
     .animState                  = ANIM_STAY,
     .screenPosition             = {0, 0},
     .globalPosition             = {0, 0},
-    .collisionRectOffset        = {22, 15},
-    .collisionRect              = {0, 0, 16, 32},
-
-    .attackCollisionRectOffset  = {32, 15},    
-    .attackCollisionRect        = {0, 0, 16, 32},
-
+    .collisionRect              = {22, 15, 40, 47},
+    .attackCollisionRect        = {22, 15, 40, 47},
     .relaxTimer             = 10,
     .health                 = 100,
     .state                  = 0,
@@ -52,7 +48,7 @@ void playerInit(Level_Typedef *level)
 void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
 {
     GoblinsList_Typedef *goblinList = enemyList->goblinsList;
-    CollisionBox_Typedef PlayerAttackCollisionBox = createCollisionBox(player->globalPosition, player->attackCollisionRect, player->attackCollisionRectOffset);
+    CollisionBox_Typedef PlayerAttackCollisionBox = createCollisionBox(player->globalPosition, player->attackCollisionRect);
     CollisionBox_Typedef gobliCollisionBox  = {
                                                 .vertex[0] = {0, 0},
                                                 .vertex[1] = {0, 0},
@@ -65,9 +61,7 @@ void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
     {
         if(goblinList->list[goblinIdx].isDead == false)
         {
-            gobliCollisionBox = createCollisionBox(goblinList->list[goblinIdx].globalPosition,
-                                                goblinList->list[goblinIdx].collisionRect,
-                                                goblinList->list[goblinIdx].collisionRectOffset);
+            gobliCollisionBox = createCollisionBox(goblinList->list[goblinIdx].globalPosition, goblinList->list[goblinIdx].collisionRect);
 
             result = checkBoxCollision(PlayerAttackCollisionBox, gobliCollisionBox);            
             if(result)        

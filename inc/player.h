@@ -98,9 +98,7 @@ typedef struct _player
     PlayerDirection_Typedef direction;
     Vec2_Typedef            globalPosition;
     Vec2_Typedef            screenPosition;
-    Vec2_Typedef            collisionRectOffset;
     RECT_Typedef            collisionRect;
-    Vec2_Typedef            attackCollisionRectOffset;    
     RECT_Typedef            attackCollisionRect;
     uint16_t                relaxTimer;
     uint16_t                health;
