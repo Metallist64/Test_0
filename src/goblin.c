@@ -17,11 +17,11 @@ void goblinsInit(GoblinsList_Typedef *goblinsList)
     }
 }
 
-void goblinsThink (GoblinsList_Typedef *goblinsList)
+void goblinsAI (GoblinsList_Typedef *goblinsList)
 {
     for (uint16_t goblinsIdx = 0; goblinsIdx < goblinsList->cnt; goblinsIdx++)
     {
-        goblinThink(goblinsList->list + goblinsIdx);
+        goblinAI(goblinsList->list + goblinsIdx);
     }
 }
 
@@ -51,93 +51,95 @@ void goblinsDraw(GoblinsList_Typedef *goblinsList)
     }
 }
 
-void goblinThink(Goblin_Typedef *goblin)
+void goblinAI(Goblin_Typedef *goblin)
 {
-    int16_t distanceX = player.globalPosition.x - goblin->globalPosition.x;
-    uint16_t absDistanceX = abs(distanceX);
-
     switch (goblin->state)
     {
-        case GOBLIN_THINK:
-
-            if( (distanceX > 50) && (distanceX < 150) )
-            {
-                goblin->state = GOBLIN_ATTACK;
-            }
-            else
-            {
-                goblin->state = GOBLIN_WALK;       
-            }
-            //KDebug_Alert("GOBLIN THINK");
-
-        break;
-
-        case GOBLIN_WALK:
-
-            if(distanceX > 0)
-            {
-                goblin->animState = GOBLIN_ANIM_WALK;
-                goblin->direction = GOBLIN_DIR_FORWARD;
-                goblin->globalPosition.x++;
-            } 
-            else
-            {
-                goblin->animState = GOBLIN_ANIM_WALK;
-                goblin->direction = GOBLIN_DIR_BACKWARD;
-                goblin->globalPosition.x--;
-            }
-            goblin->state = GOBLIN_TICKS;
-            //KDebug_Alert("GOBLIN WALK");
-
-        break;
-        
-        case GOBLIN_ATTACK:
-
-            goblin->animState = GOBLIN_ANIM_ATTACK;
-            goblin->state = GOBLIN_TICKS;
-            //KDebug_Alert("GOBLIN ATTACK");
-
-        break;
-
-
-        case GOBLIN_STAY:
-            
-            //KDebug_Alert("GOBLIN STAY");
-            //goblin->state = 
-
-        break;
-    
-        case GOBLIN_DIE:
-
-            //KDebug_Alert("GOBLIN DIE");
-
-        break;        
-
-        case GOBLIN_TICKS:
-        
-            goblin->thinkTicksCnt--;
-            if(goblin->thinkTicksCnt == 0) 
-            {
-                goblin->thinkTicksCnt = goblin->thinkTicks;
-                goblin->state = GOBLIN_THINK;
-            }
-           // KDebug_Alert("GOBLIN TICKS");
-            //KDebug_AlertNumber();
-
-        break;         
-
-
-
-        case GOBLIN_IDLE:
-
-
-        break;
-
-
-        default:
-
-        break;
+        case GOBLIN_THINK:  goblinAI_Think(goblin);     break;
+        case GOBLIN_WALK:   goblinAI_Walk(goblin);      break;
+        case GOBLIN_ATTACK: goblinAI_Attack(goblin);    break;
+        case GOBLIN_STAY:   goblinAI_Stay(goblin);      break;
+        case GOBLIN_DIE:    goblinAI_Die(goblin);       break;
+        case GOBLIN_TICKS:  goblinAI_Ticks(goblin);     break;
+        case GOBLIN_IDLE:   goblinAI_Idle(goblin);      break;
     }    
+}
+
+void goblinAI_Think(Goblin_Typedef *goblin)
+{
+
+    int16_t distanceX = player.globalPosition.x - goblin->globalPosition.x;
+    uint16_t absDistanceX = abs(distanceX);    
+
+    if( (distanceX > 50) && (distanceX < 150) )
+    {
+        goblin->state = GOBLIN_ATTACK;
+    }
+    else
+    {
+        goblin->state = GOBLIN_WALK;       
+    }
+}
+
+void goblinAI_Walk(Goblin_Typedef *goblin)
+{
+
+    int16_t distanceX = player.globalPosition.x - goblin->globalPosition.x;
+    uint16_t absDistanceX = abs(distanceX);    
+
+    if(distanceX > 0)
+    {
+        goblin->animState = GOBLIN_ANIM_WALK;
+        goblin->direction = GOBLIN_DIR_FORWARD;
+        goblin->globalPosition.x++;
+    } 
+    else
+    {
+        goblin->animState = GOBLIN_ANIM_WALK;
+        goblin->direction = GOBLIN_DIR_BACKWARD;
+        goblin->globalPosition.x--;
+    }
+    goblin->state = GOBLIN_TICKS;
+    //KDebug_Alert("GOBLIN WALK");
+}
+
+void goblinAI_Attack(Goblin_Typedef *goblin)
+{
+    goblin->animState = GOBLIN_ANIM_ATTACK;
+    goblin->state = GOBLIN_TICKS;
+    //KDebug_Alert("GOBLIN ATTACK");
+}
+
+void goblinAI_Stay(Goblin_Typedef *goblin)
+{
 
 
 }
+
+void goblinAI_Die(Goblin_Typedef *goblin)
+{
+    if(SPR_isAnimationDone(goblin->sprite))
+    {
+        SPR_setAnimationLoop(goblin->sprite, false);
+        goblin->state       = GOBLIN_IDLE;
+        //while(1)    ;
+    }
+}
+
+void goblinAI_Ticks(Goblin_Typedef *goblin)
+{
+    goblin->thinkTicksCnt--;
+    if(goblin->thinkTicksCnt == 0) 
+    {
+        goblin->thinkTicksCnt = goblin->thinkTicks;
+        goblin->state = GOBLIN_THINK;
+    }
+}
+
+void goblinAI_Idle(Goblin_Typedef *goblin)
+{
+
+
+}
+
+

@@ -17,7 +17,7 @@ typedef void (*EnemyThinkHandler)   (EnemyList_Typedef*);
 
 void enemyInit  (EnemyList_Typedef *enemyList);
 void enemyDraw  (EnemyList_Typedef *enemyList);
-void enemyThink (EnemyList_Typedef *enemyList);
+void enemyAI    (EnemyList_Typedef *enemyList);
 
 
 
@@ -25,7 +25,7 @@ typedef struct _enemy
 {
     EnemyInitHandler    init;    
     EnemyDrawHandler    draw;  
-    EnemyThinkHandler   think;  
+    EnemyThinkHandler   AI;  
 
 }Enemy_Typedef;
 

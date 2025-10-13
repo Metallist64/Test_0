@@ -62,7 +62,7 @@ typedef struct _collisionBox
 }CollisionBox_Typedef;
 
 CollisionBox_Typedef    createCollisionBox          (Vec2_Typedef position, RECT_Typedef collisionRect, Vec2_Typedef collisionRectOffset);
-uint16_t                checkBoxCollision           (CollisionBox_Typedef zone_0, CollisionBox_Typedef zone_1);
+uint16_t                checkBoxCollision           (CollisionBox_Typedef boxMain, CollisionBox_Typedef boxSlave);
 uint16_t                checkCollisionBoxByPoint    (CollisionBox_Typedef box, Vec2_Typedef point);
 
 

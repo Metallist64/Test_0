@@ -49,40 +49,40 @@ void playerInit(Level_Typedef *level)
     //KDebug_AlertNumber(player.attack.attackIdx); 
 }
   
-//typedef void FrameChangeCallback(Sprite* sprite);
-
 void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
 {
     GoblinsList_Typedef *goblinList = enemyList->goblinsList;
-    CollisionBox_Typedef PlayerCollisionBox = createCollisionBox(player->globalPosition, player->attackCollisionRect, player->attackCollisionRectOffset);
+    CollisionBox_Typedef PlayerAttackCollisionBox = createCollisionBox(player->globalPosition, player->attackCollisionRect, player->attackCollisionRectOffset);
     CollisionBox_Typedef gobliCollisionBox  = {
                                                 .vertex[0] = {0, 0},
                                                 .vertex[1] = {0, 0},
                                                 .vertex[2] = {0, 0},
                                                 .vertex[3] = {0, 0},
                                               };
-    
+    uint16_t result = false;
+
     for(uint16_t goblinIdx = 0; goblinIdx < goblinList->cnt; goblinIdx++)
     {
-        gobliCollisionBox = createCollisionBox(goblinList->list[goblinIdx].globalPosition,
-                                               goblinList->list[goblinIdx].collisionRect,
-                                               goblinList->list[goblinIdx].collisionRectOffset);
+        if(goblinList->list[goblinIdx].isDead == false)
+        {
+            gobliCollisionBox = createCollisionBox(goblinList->list[goblinIdx].globalPosition,
+                                                goblinList->list[goblinIdx].collisionRect,
+                                                goblinList->list[goblinIdx].collisionRectOffset);
 
-        checkBoxCollision(player->attackCollisionRect, enemyList->goblinsList->list[0].collisionBox);            
-
-       
-
+            result = checkBoxCollision(PlayerAttackCollisionBox, gobliCollisionBox);            
+            if(result)        
+            {
+                KDebug_Alert("Attack cpllision found:");
+                goblinList->list[goblinIdx].health--;
+                if(goblinList->list[goblinIdx].health == 0)
+                {
+                    goblinList->list[goblinIdx].isDead      = true;
+                    goblinList->list[goblinIdx].state       = GOBLIN_DIE;
+                    goblinList->list[goblinIdx].animState   = GOBLIN_ANIM_DEATH;
+                }
+            }
+        }
     } 
-    
-    
-
-
-
-              
-
-   // enemyList->goblinsList
-
-
 }
 
 void playerAttack(void)
@@ -107,9 +107,7 @@ void playerAttack(void)
             
             if((player.sprite->frameInd == 2) || (player.sprite->frameInd == 3))
             {
-                
-                
-
+                playerDamage(&player,  level_0.enemyList);
 
 
             }   

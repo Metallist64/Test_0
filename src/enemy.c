@@ -10,7 +10,7 @@ Enemy_Typedef enemy =
 {
     .init   = enemyInit,
     .draw   = enemyDraw,
-    .think  = enemyThink,
+    .AI     = enemyAI,
 };
 
 void enemyInit(EnemyList_Typedef *enemyList)
@@ -25,9 +25,9 @@ void enemyDraw(EnemyList_Typedef *enemyList)
 
 }
 
-void enemyThink(EnemyList_Typedef *enemyList)
+void enemyAI(EnemyList_Typedef *enemyList)
 {
-    goblinsThink(enemyList->goblinsList);
+    goblinsAI(enemyList->goblinsList);
 }
 
 

@@ -43,7 +43,9 @@ typedef struct _goblin
     Vec2_Typedef            collisionRectOffset;    
     uint16_t                thinkTicks;
     uint16_t                thinkTicksCnt;
-    GoblinAnim_Typedef      animState;       
+    GoblinAnim_Typedef      animState;   
+    uint16_t                isDead;
+
 } Goblin_Typedef;
 
 typedef struct _goblins_list
@@ -54,8 +56,16 @@ typedef struct _goblins_list
 }GoblinsList_Typedef;
 
 void goblinsInit    (GoblinsList_Typedef    *goblinsList);
-void goblinThink    (Goblin_Typedef         *goblin);
-void goblinsThink   (GoblinsList_Typedef    *goblinsList);
+void goblinsAI      (GoblinsList_Typedef    *goblinsList);
+void goblinAI       (Goblin_Typedef         *goblin);
 void goblinsDraw    (GoblinsList_Typedef    *goblinsList);
+
+void goblinAI_Think (Goblin_Typedef *goblin);  
+void goblinAI_Walk  (Goblin_Typedef *goblin);  
+void goblinAI_Attack(Goblin_Typedef *goblin);
+void goblinAI_Stay  (Goblin_Typedef *goblin);  
+void goblinAI_Die   (Goblin_Typedef *goblin);   
+void goblinAI_Ticks (Goblin_Typedef *goblin); 
+void goblinAI_Idle  (Goblin_Typedef *goblin);  
 
 #endif

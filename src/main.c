@@ -95,7 +95,7 @@ int main(bool hardReset)
 
     //typedef void FrameChangeCallback(Sprite* sprite);
 
-    SPR_setFrameChangeCallback(player.sprite, myCallback);
+   // SPR_setFrameChangeCallback(player.sprite, myCallback);
 
     while(1)
     {
