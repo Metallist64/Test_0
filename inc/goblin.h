@@ -26,17 +26,35 @@ typedef enum _goblin_state
 
 typedef enum _goblin_direction
 {
-    GOBLIN_DIR_FORWARD,     
-    GOBLIN_DIR_BACKWARD,    
-} GoblinDirection_Typedef;
+    GOBLIN_MOVE_STAY,     
+    GOBLIN_MOVE_FORWARD,     
+    GOBLIN_MOVE_BACKWARD,    
+} GoblinMoveState_Typedef;
+
+typedef struct _path
+{
+    uint16_t start;
+    uint16_t end;
+}Path_Typdef;
+
+
+typedef struct _blink
+{
+    uint16_t                En;
+    SpriteVisibility        visibility;
+    uint16_t                ticks;
+    uint16_t                ticksCnt;
+    uint16_t                period;
+    uint16_t                periodCnt;
+}BlinkState_Typdef;
 
 typedef struct _goblin
 {
     const SpriteDefinition  *spriteDef;     // RawSprite reference
     Sprite                  *sprite;        // Engine Sprite reference
     uint16_t                health; 
-    GoblinDirection_Typedef direction;
-    GoblinState_Typedef     state;    
+    GoblinMoveState_Typedef moveSatate;
+    GoblinState_Typedef     stateAI;    
     uint16_t                movement;
     Vec2_Typedef            globalPosition;
     RECT_Typedef            collisionRect;
@@ -45,6 +63,9 @@ typedef struct _goblin
     uint16_t                thinkTicksCnt;
     GoblinAnim_Typedef      animState;   
     uint16_t                isDead;
+    Path_Typdef             path;
+    uint16_t                flip;
+    BlinkState_Typdef       blink;
 
 } Goblin_Typedef;
 

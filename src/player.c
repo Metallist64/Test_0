@@ -17,7 +17,7 @@ Player_Typedef player =
     .screenPosition             = {0, 0},
     .globalPosition             = {0, 0},
     .collisionRect              = {22, 15, 40, 47},
-    .attackCollisionRect        = {22, 15, 40, 47},
+    .attackCollisionRect        = {40, 15, 56, 47},
     .relaxTimer             = 10,
     .health                 = 100,
     .state                  = 0,
@@ -67,11 +67,12 @@ void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
             if(result)        
             {
                 KDebug_Alert("Attack cpllision found:");
+                goblinList->list[goblinIdx].blink.En = true;
                 goblinList->list[goblinIdx].health--;
                 if(goblinList->list[goblinIdx].health == 0)
                 {
                     goblinList->list[goblinIdx].isDead      = true;
-                    goblinList->list[goblinIdx].state       = GOBLIN_DIE;
+                    goblinList->list[goblinIdx].stateAI     = GOBLIN_DIE;
                     goblinList->list[goblinIdx].animState   = GOBLIN_ANIM_DEATH;
                 }
             }

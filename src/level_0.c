@@ -98,18 +98,24 @@ Goblin_Typedef goblinsLevel_0[] =
     {
         .spriteDef              = &orange_goblin_sprite,
         .sprite                 = NULL,       
-        .health                 = 10,
-        .direction              = GOBLIN_DIR_FORWARD,
-        .state                  = GOBLIN_THINK,
+        .health                 = 40,
+        .moveSatate             = GOBLIN_MOVE_FORWARD,
+        .stateAI                = GOBLIN_THINK,
         .movement               = 1,  
         .collisionRect          = {16, 0, 32, 32},  
         .collisionRectOffset    = {16, 0},  
-        .thinkTicks             = 5,
-        .thinkTicksCnt          = 5,
+        .thinkTicks             = 3,
+        .thinkTicksCnt          = 3,
+        .animState              = GOBLIN_ANIM_WALK,
         .isDead                 = false,    
         .globalPosition         = {336, 672},
+        .path                   = {336, 450},
+        .flip                   = false,
+        .blink                  = {false, VISIBLE, 5, 5, 50, 50},
+        
     },
-
+    
+/*
     {
         .spriteDef              = &orange_goblin_sprite,
         .sprite                 = NULL,       
@@ -122,7 +128,8 @@ Goblin_Typedef goblinsLevel_0[] =
         .thinkTicks             = 5,
         .thinkTicksCnt          = 5,
         .isDead                 = false,
-        .globalPosition         = {460, 672},   
+        .globalPosition         = {460, 672},  
+        .path                   = {460, 500}, 
     },
 
     
@@ -138,10 +145,11 @@ Goblin_Typedef goblinsLevel_0[] =
         .thinkTicks             = 5,
         .thinkTicksCnt          = 5,
         .isDead                 = false,
-        .globalPosition         = {688, 672},     
+        .globalPosition         = {688, 672},  
+        .path                   = {688, 500},   
     },
 
-/*
+
     {
         .spriteDef      = &orange_goblin_sprite,
         .sprite         = NULL,       
