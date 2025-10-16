@@ -29,6 +29,7 @@
         "goblin.h": "c",
         "damage.h": "c",
         "stdlib.h": "c",
-        "vdp_tile.h": "c"
+        "vdp_tile.h": "c",
+        "projectile.h": "c"
     }
 }

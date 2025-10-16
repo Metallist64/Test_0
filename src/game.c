@@ -5,6 +5,7 @@
 #include "game.h"
 #include "player.h"
 #include "level_0.h"
+#include "projectile.h"
 
 Game_Typedef game =
 {
@@ -24,4 +25,8 @@ void gameProcessing(void)
     enemy.AI    (&enemyListLevel_0);
     enemy.draw  (&enemyListLevel_0);
 
+    //projecttiles.checkCollisions();
+    projecttiles.draw();
+    //projectilesDraw();
+    //projectilesDraw();
 }

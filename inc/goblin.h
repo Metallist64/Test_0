@@ -36,6 +36,7 @@ typedef enum _goblin_attack_state
     GOBLIN_ATTACK_THROW_SPEAR_PROCESSING,
     GOBLIN_ATTACK_THROW_SPEAR_END,
     GOBLIN_ATTACK_RELAX,    
+    GOBLIN_ATTACK_IDLE,    
 } GoblinAttackState_Typedef;
 
 typedef struct _path
@@ -65,7 +66,7 @@ typedef struct _goblin_spear
     uint16_t                thinkTicks;
     uint16_t                thinkTicksCnt;
     uint16_t                flip;
-} GoblinSpear_Typedef;
+} ProjectileSpear_Typedef;
 
 typedef struct _goblin
 {
@@ -84,7 +85,6 @@ typedef struct _goblin
     Path_Typdef                 path;
     uint16_t                    flip;
     BlinkState_Typdef           blink;
-    GoblinSpear_Typedef         *spear;
     GoblinAttackState_Typedef   attackState;
     GoblinLookState_Typedef     lookState;
 } Goblin_Typedef;

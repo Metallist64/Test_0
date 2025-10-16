@@ -56,8 +56,8 @@ void goblinsDraw(GoblinsList_Typedef *goblinsList)
         goblin->localPosition.x = goblin->globalPosition.x - playerCamera.viewZone.left;
         goblin->localPosition.y = goblin->globalPosition.y - playerCamera.viewZone.top;
 
-        if(goblin->localPosition.x > 0) goblin->flip = false;
-        else                            goblin->flip = true;        
+        if( player.globalPosition.x - goblin->globalPosition.x > 0)  goblin->flip = false;
+        else                                                         goblin->flip = true;        
 
         if((goblin->localPosition.x > 320)|| (goblin->localPosition.x < -32)||(goblin->localPosition.y > 240)|| (goblin->localPosition.y < 0))
         {
@@ -72,18 +72,7 @@ void goblinsDraw(GoblinsList_Typedef *goblinsList)
             {
                goblinBlink(goblin);
             }
-
-            switch (goblin->stateAI)
-            {
-
-                case AI_GOBLIN_THINK:                                      
-                case AI_GOBLIN_STAY:       goblin->animState = GOBLIN_ANIM_STAY;       break;        
-                case AI_GOBLIN_WALK:       goblin->animState = GOBLIN_ANIM_WALK;       break;
-                case AI_GOBLIN_ATTACK:     goblin->animState = GOBLIN_ANIM_ATTACK;     break;        
-                case AI_GOBLIN_DIE:        goblin->animState = GOBLIN_ANIM_DEATH;      break;        
-                case AI_GOBLIN_TICKS:      goblin->animState = GOBLIN_ANIM_DEATH;      break;          
-            }
-
+        
             SPR_setVisibility(goblin->sprite, goblin->blink.visibility);
             SPR_setAnim(goblin->sprite, goblin->animState);
         }
@@ -148,13 +137,13 @@ void goblinAI_Walk(Goblin_Typedef *goblin)
 
 void goblinAI_Attack(Goblin_Typedef *goblin)
 {
-  
+    //KDebug_AlertNumber(goblin->attackState);
+
     switch (goblin->attackState)
     {
         case GOBLIN_ATTACK_AIM:
-         
-            if( goblin->globalPosition.x > 0 && goblin->globalPosition.x = 16
-                (absDistanceX > 32 && absDistanceX < 160))
+            
+            if(goblin->localPosition.x > 0 && goblin->localPosition.x < 300)
             {
                 goblin->animState = GOBLIN_ANIM_ATTACK;
                 goblin->attackState = GOBLIN_ATTACK_THROW_SPEAR_START;
@@ -165,7 +154,7 @@ void goblinAI_Attack(Goblin_Typedef *goblin)
 
         case GOBLIN_ATTACK_THROW_SPEAR_START:
 
-            if(player.sprite->frameInd == 7)
+            if(goblin->sprite->frameInd == 5)
             {
                 KDebug_Alert("GOBLIN CREATE THROW");
 
@@ -173,10 +162,8 @@ void goblinAI_Attack(Goblin_Typedef *goblin)
                 //SPR_setAnimationLoop(goblin->sprite, false);
                 //SPR_setAutoAnimation(goblin->sprite, false);
                 //SPR_setFrame(goblin->sprite, 6);
-                goblin->spear = goblinCreateSpear(goblin); //Take direction from goblin
+                goblin->animState = GOBLIN_ANIM_STAY;
                 goblin->attackState = GOBLIN_ATTACK_THROW_SPEAR_PROCESSING;
-                //goblin->attackState = GOBLIN_ATTACK_RELAX;
-                
             }
         break;        
 
@@ -189,14 +176,8 @@ void goblinAI_Attack(Goblin_Typedef *goblin)
 
             //KDebug_Alert("Attack processing");
 
-            if(spearLocalPositionX < 320 && spearLocalPositionX > 0)
-            {
-                 SPR_setVisibility(goblin->spear->sprite, VISIBLE);
-            }
-            else
-            {
-                 SPR_setVisibility(goblin->spear->sprite, HIDDEN);
-            }
+            if(spearLocalPositionX < 320 && spearLocalPositionX > 0)    SPR_setVisibility(goblin->spear->sprite, VISIBLE);
+            else                                                        SPR_setVisibility(goblin->spear->sprite, HIDDEN);
 
             if(spearLocalPositionX < -32  || spearLocalPositionX > 320)
             {
@@ -215,8 +196,13 @@ void goblinAI_Attack(Goblin_Typedef *goblin)
 //            SPR_setAnimAndFrame(goblin->sprite, GOBLIN_ANIM_WALK, 0);
             //SPR_setAutoAnimation(goblin->sprite, true);
             //SPR_setAnimationLoop(goblin->sprite, true);
+            if(goblin->isDead)
+            {
+               goblin->stateAI      = AI_GOBLIN_IDLE;
+               goblin->attackState  = GOBLIN_ATTACK_IDLE;
+            }
             goblin->attackState = GOBLIN_ATTACK_AIM;
-            goblin->stateAI = AI_GOBLIN_WALK;
+            //goblin->stateAI = AI_GOBLIN_WALK;
 
         break;           
 
@@ -225,7 +211,11 @@ void goblinAI_Attack(Goblin_Typedef *goblin)
             //goblin->attackState = GOBLIN_ATTACK_AIM;
             //goblin->stateAI = GOBLIN_TICKS;
 
-        break;        
+        break;       
+        
+        case GOBLIN_ATTACK_IDLE:
+
+        break;
 
     }
 }
@@ -252,7 +242,7 @@ void goblinAI_Ticks(Goblin_Typedef *goblin)
     if(goblin->thinkTicksCnt == 0) 
     {
         goblin->thinkTicksCnt = goblin->thinkTicks;
-        goblin->stateAI = AI_GOBLIN_THINK;
+        goblin->stateAI = AI_GOBLIN_ATTACK;
     }
 }
 

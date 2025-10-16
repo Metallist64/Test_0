@@ -40,9 +40,6 @@ void playerInit(Level_Typedef *level)
     player.globalPosition.y = level->startY;
     player.sprite = SPR_addSprite(player.spriteDef, player.globalPosition.x, player.globalPosition.y, TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
     SPR_setAnim(player.sprite, ANIM_STAY);
-    //KDebug_Alert("Player position:");
-    //KDebug_AlertNumber(player.attack.attackIdx); 
-    //KDebug_AlertNumber(player.attack.attackIdx); 
 }
   
 void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
@@ -72,7 +69,6 @@ void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
                 if(goblinList->list[goblinIdx].health == 0)
                 {
                     goblinList->list[goblinIdx].isDead      = true;
-                    goblinList->list[goblinIdx].stateAI     = AI_GOBLIN_DIE;
                     goblinList->list[goblinIdx].animState   = GOBLIN_ANIM_DEATH;
                 }
             }
