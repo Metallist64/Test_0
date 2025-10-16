@@ -27,6 +27,8 @@
         "game.h": "c",
         "enemy.h": "c",
         "goblin.h": "c",
-        "damage.h": "c"
+        "damage.h": "c",
+        "stdlib.h": "c",
+        "vdp_tile.h": "c"
     }
 }

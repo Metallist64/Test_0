@@ -97,6 +97,11 @@ int main(bool hardReset)
 
    // SPR_setFrameChangeCallback(player.sprite, myCallback);
 
+    //const SpriteDefinition  *spriteDefTest =  &orange_goblin_spear_sprite;    
+    //Sprite                  *spriteTest = SPR_addSprite(spriteDefTest, 10, 10, TILE_ATTR(PAL3, TRUE, FALSE, FALSE));       
+    //SPR_setVisibility(spriteTest, VISIBLE);
+
+
     while(1)
     {
         game.run();

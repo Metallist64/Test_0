@@ -22,7 +22,7 @@ typedef enum
 
 typedef enum _player_direction
 {
-    PLAYER_DIR_FORWARD,     
+    PLAYER_DIR_FORWARD = 0,     
     PLAYER_DIR_BACKWARD,    
 } PlayerDirection_Typedef;
 
@@ -70,17 +70,21 @@ typedef struct _player_jump
 
 typedef struct _input_word
 {
-    uint16_t    dummy_1 : 6;
+    uint16_t            : 4;
+    uint16_t    Mode    : 1;
+    uint16_t    X       : 1;
+    uint16_t    Y       : 1;
+    uint16_t    Z       : 1;
     uint16_t    Start   : 1;
+    uint16_t    A       : 1;
     uint16_t    C       : 1;
     uint16_t    B       : 1;
-    uint16_t    A       : 1;
-    uint16_t    dummy_0 : 2;
     uint16_t    Right   : 1;
     uint16_t    Left    : 1;
     uint16_t    Down    : 1;
     uint16_t    Up      : 1;
 }InputWord_Typedef;
+
 
 typedef union _input
 {
@@ -99,7 +103,7 @@ typedef struct _player
     Vec2_Typedef            globalPosition;
     Vec2_Typedef            screenPosition;
     RECT_Typedef            collisionRect;
-    RECT_Typedef            attackCollisionRect;
+    RECT_Typedef            attackCollisionRect[2];
     uint16_t                relaxTimer;
     uint16_t                health;
     Jump_Typedef            jump;

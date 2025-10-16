@@ -17,7 +17,7 @@ Player_Typedef player =
     .screenPosition             = {0, 0},
     .globalPosition             = {0, 0},
     .collisionRect              = {22, 15, 40, 47},
-    .attackCollisionRect        = {40, 15, 56, 47},
+    .attackCollisionRect        = { {40, 15, 56, 47}, {-16, 15, 0, 47} },
     .relaxTimer             = 10,
     .health                 = 100,
     .state                  = 0,
@@ -48,7 +48,7 @@ void playerInit(Level_Typedef *level)
 void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
 {
     GoblinsList_Typedef *goblinList = enemyList->goblinsList;
-    CollisionBox_Typedef PlayerAttackCollisionBox = createCollisionBox(player->globalPosition, player->attackCollisionRect);
+    CollisionBox_Typedef PlayerAttackCollisionBox = createCollisionBox(player->globalPosition, player->attackCollisionRect[player->direction]);
     CollisionBox_Typedef gobliCollisionBox  = {
                                                 .vertex[0] = {0, 0},
                                                 .vertex[1] = {0, 0},
@@ -72,7 +72,7 @@ void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
                 if(goblinList->list[goblinIdx].health == 0)
                 {
                     goblinList->list[goblinIdx].isDead      = true;
-                    goblinList->list[goblinIdx].stateAI     = GOBLIN_DIE;
+                    goblinList->list[goblinIdx].stateAI     = AI_GOBLIN_DIE;
                     goblinList->list[goblinIdx].animState   = GOBLIN_ANIM_DEATH;
                 }
             }
@@ -87,7 +87,7 @@ void playerAttack(void)
         case PLAYER_STAY:
         case PLAYER_WALK:
 
-            if(player.input.buttons.C)
+            if(player.input.buttons.B)
             {
                 player.attack.attackIdx = player.attack.attackStateIdx[player.attack.attackIdx];
                 player.state = player.attack.attackState[player.attack.attackIdx];

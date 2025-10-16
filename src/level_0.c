@@ -99,11 +99,10 @@ Goblin_Typedef goblinsLevel_0[] =
         .spriteDef              = &orange_goblin_sprite,
         .sprite                 = NULL,       
         .health                 = 40,
-        .moveSatate             = GOBLIN_MOVE_FORWARD,
-        .stateAI                = GOBLIN_THINK,
+        .lookState             = GOBLIN_LOOK_FORWARD,
+        .stateAI                = AI_GOBLIN_THINK,
         .movement               = 1,  
         .collisionRect          = {16, 0, 32, 32},  
-        .collisionRectOffset    = {16, 0},  
         .thinkTicks             = 3,
         .thinkTicksCnt          = 3,
         .animState              = GOBLIN_ANIM_WALK,
@@ -112,9 +111,12 @@ Goblin_Typedef goblinsLevel_0[] =
         .path                   = {336, 450},
         .flip                   = false,
         .blink                  = {false, VISIBLE, 5, 5, 50, 50},
+        .spear                  = NULL,
+        //.spear                  = {&orange_goblin_spear_sprite, NULL, 0, {0, 0}, {0,0,32,8},0,0,false},
         
     },
-    
+ 
+
 /*
     {
         .spriteDef              = &orange_goblin_sprite,

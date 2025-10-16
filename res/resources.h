@@ -7,6 +7,7 @@ extern const TileSet res_tileset_0;
 extern const MapDefinition res_map_0;
 extern const Palette res_palette_0;
 extern const SpriteDefinition orange_goblin_sprite;
+extern const SpriteDefinition orange_goblin_spear_sprite;
 extern const SpriteDefinition player_sprite;
 extern const TileSet animated_tileset_frame_0;
 

@@ -25,7 +25,6 @@ CollisionBox_Typedef createCollisionBox(Vec2_Typedef position, RECT_Typedef coll
 uint16_t checkBoxCollision (CollisionBox_Typedef boxMain, CollisionBox_Typedef boxSlave)
 {
     uint16_t                result = false;
-    uint16_t                vertexCollisinResult = 0;
     
     for(uint16_t i = 0; i < 4; i++)
     {
