@@ -91,10 +91,95 @@ void goblinsDraw(GoblinsList_Typedef *goblinsList)
     }
 }
 
-GOBLIN_VISIBILITY_OFF_SCREEN
-GOBLIN_VISIBILITY_ONSCREEN_LIVE_NORMAL
+void goblinsDraw_2(GoblinsList_Typedef *goblinsList)
+{
+    Goblin_Typedef *goblin          = NULL;
+    
+    for (uint16_t goblinsIdx = 0; goblinsIdx < goblinsList->cnt; goblinsIdx++)
+    {
+        goblin = &goblinsList->list[goblinsIdx];
+        goblin->localPosition.x = goblin->globalPosition.x - playerCamera.viewZone.left;
+        goblin->localPosition.y = goblin->globalPosition.y - playerCamera.viewZone.top; 
+
+        if((goblin->localPosition.x > 320)|| (goblin->localPosition.x < -32)||(goblin->localPosition.y > 240)|| (goblin->localPosition.y < 0))
+        {
+            SPR_setVisibility(goblin->sprite, HIDDEN);        
+        
+        
+       if (goblin->states.drawState != goblin->states.drawPrevState)
+        {
+            switch (goblin->states.drawState)
+            {
+                case GOBLIN_VISIBILITY_OFF_SCREEN:
+                    SPR_setVisibility(goblin->sprite, HIDDEN);        
+                break;  
+                
+                case GOBLIN_VISIBILITY_ONSCREEN_LIVE_NORMAL:
+                    SPR_setVisibility(goblin->sprite, goblin->blink.visibility);
+                    SPR_setHFlip(goblin->sprite, goblin->flip);   
+                    SPR_setAnim(goblin->sprite, goblin->states.animState);
+                break;
+
+                case GOBLIN_VISIBILITY_ONSCREEN_LIVE_BLINK:
+
+                break;
+
+                case GOBLIN_VISIBILITY_ONSCREEN_DEAD:
+
+                break;
+
+                
+
+
+            }
+
+
+
+            goblin->states.drawPrevState = goblin->states.drawState;
+        }
+        
+
+
+
+        if( player.globalPosition.x - goblin->globalPosition.x > 0)  goblin->flip = false;
+        else                                                         goblin->flip = true;        
+
+        if((goblin->localPosition.x > 320)|| (goblin->localPosition.x < -32)||(goblin->localPosition.y > 240)|| (goblin->localPosition.y < 0))
+        {
+            SPR_setVisibility(goblin->sprite, HIDDEN);
+        }
+        else
+        {  
+            if(!goblin->isDead)
+            {
+                SPR_setHFlip(goblin->sprite, goblin->flip);             
+                SPR_setPosition(goblin->sprite, goblin->localPosition.x, goblin->localPosition.y);
+                
+                if(goblin->blink.En)
+                {
+                    goblinBlink(goblin);
+                }
+            
+                SPR_setVisibility(goblin->sprite, goblin->blink.visibility);
+                SPR_setAnim(goblin->sprite, goblin->states.animState);
+            }
+            else
+            {
+                SPR_setVisibility(goblin->sprite, VISIBLE);
+                SPR_setPosition(goblin->sprite, goblin->localPosition.x, goblin->localPosition.y);
+                SPR_setAnimationLoop(goblin->sprite, false);
+                SPR_setAnim(goblin->sprite, goblin->states.animState);
+            } 
+
+
+        }
+    }
+}
+
+
+
 GOBLIN_VISIBILITY_ONSCREEN_LIVE_BLINK
-GOBLIN_VISIBILITY_ONSCREEN_DEAD
+
 
 
 void goblinAI(Goblin_Typedef *goblin)

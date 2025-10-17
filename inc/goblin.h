@@ -34,12 +34,22 @@ typedef enum _goblin_death_state
     GOBLIN_DEATH_END,     
 } GoblinDeathState_Typedef;
 
+typedef enum _goblin_draw_state
+{
+    GOBLIN_VISIBILITY_OFF_SCREEN,
+    GOBLIN_VISIBILITY_ONSCREEN_LIVE_NORMAL,
+    GOBLIN_VISIBILITY_ONSCREEN_LIVE_BLINK,
+    GOBLIN_VISIBILITY_ONSCREEN_DEAD,
+} GoblinDrawState_Typedef;
+
 typedef struct _goblin_states
 {
     GoblinAiState_Typedef       aiState;
     GoblinAttackState_Typedef   attackState;
     GoblinDeathState_Typedef    deathState;
     GoblinAnimState_Typedef     animState;
+    GoblinDrawState_Typedef     drawState;
+    GoblinDrawState_Typedef     drawPrevState;
 }GoblinStates_Typedef;
 
 typedef struct _path
