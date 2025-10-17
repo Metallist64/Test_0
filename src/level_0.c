@@ -1,5 +1,6 @@
 #include "level.h"
 #include "level_0.h"
+#include "projectile.h"
 #include "resources.h"
 #include "enemy.h"
 
@@ -100,18 +101,17 @@ Goblin_Typedef goblinsLevel_0[] =
         .sprite                 = NULL,       
         .health                 = 40,
         .lookState              = GOBLIN_LOOK_FORWARD,
-        .stateAI                = AI_GOBLIN_ATTACK,
+        .states                 = {AI_GOBLIN_ATTACK, GOBLIN_ATTACK_AIM, GOBLIN_DEATH_START, GOBLIN_ANIM_STAY},
         .movement               = 1,  
         .collisionRect          = {16, 0, 32, 32},  
-        .thinkTicks             = 3,
-        .thinkTicksCnt          = 3,
-        .animState              = GOBLIN_ANIM_STAY,
+        .thinkTicks             = 200,
+        .thinkTicksCnt          = 200,
         .isDead                 = false,    
         .globalPosition         = {336, 672},
         .path                   = {336, 450},
         .flip                   = false,
         .blink                  = {false, VISIBLE, 5, 5, 50, 50},
-        .attackState            = GOBLIN_ATTACK_AIM,    
+        .createSpear            = createProjectileSpear,
     },
  
 

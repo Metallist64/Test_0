@@ -54,7 +54,7 @@ void goblinsDraw(GoblinsList_Typedef *goblinsList)
     {
         goblin = &goblinsList->list[goblinsIdx];
         goblin->localPosition.x = goblin->globalPosition.x - playerCamera.viewZone.left;
-        goblin->localPosition.y = goblin->globalPosition.y - playerCamera.viewZone.top;
+        goblin->localPosition.y = goblin->globalPosition.y - playerCamera.viewZone.top; 
 
         if( player.globalPosition.x - goblin->globalPosition.x > 0)  goblin->flip = false;
         else                                                         goblin->flip = true;        
@@ -65,175 +65,114 @@ void goblinsDraw(GoblinsList_Typedef *goblinsList)
         }
         else
         {  
-            SPR_setHFlip(goblin->sprite, goblin->flip);             
-            SPR_setPosition(goblin->sprite, goblin->localPosition.x, goblin->localPosition.y);
-            
-            if(goblin->blink.En)
+            if(!goblin->isDead)
             {
-               goblinBlink(goblin);
+                SPR_setHFlip(goblin->sprite, goblin->flip);             
+                SPR_setPosition(goblin->sprite, goblin->localPosition.x, goblin->localPosition.y);
+                
+                if(goblin->blink.En)
+                {
+                    goblinBlink(goblin);
+                }
+            
+                SPR_setVisibility(goblin->sprite, goblin->blink.visibility);
+                SPR_setAnim(goblin->sprite, goblin->states.animState);
             }
-        
-            SPR_setVisibility(goblin->sprite, goblin->blink.visibility);
-            SPR_setAnim(goblin->sprite, goblin->animState);
+            else
+            {
+                SPR_setVisibility(goblin->sprite, VISIBLE);
+                SPR_setPosition(goblin->sprite, goblin->localPosition.x, goblin->localPosition.y);
+                SPR_setAnimationLoop(goblin->sprite, false);
+                SPR_setAnim(goblin->sprite, goblin->states.animState);
+            } 
+
+
         }
     }
 }
 
+GOBLIN_VISIBILITY_OFF_SCREEN
+GOBLIN_VISIBILITY_ONSCREEN_LIVE_NORMAL
+GOBLIN_VISIBILITY_ONSCREEN_LIVE_BLINK
+GOBLIN_VISIBILITY_ONSCREEN_DEAD
 
-void goblinDeleteSpear(Goblin_Typedef *goblin)
-{
-    SPR_releaseSprite(goblin->spear->sprite);
-    free(goblin->spear);
-    goblin->spear = NULL;
-}
-
-GoblinSpear_Typedef *goblinCreateSpear(Goblin_Typedef *goblin)
-{
-    GoblinSpear_Typedef *spear = (GoblinSpear_Typedef*)malloc(sizeof(GoblinSpear_Typedef));
-    if(spear == NULL) 
-    {
-        KDebug_Alert("Malloc error.");
-        while (1);
-    }
-    else
-    {
-        if(goblin->flip == true)   spear->step = -1;
-        else                       spear->step = 1;
-
-        spear->globalPosition.x = goblin->globalPosition.x;
-        spear->globalPosition.y = goblin->globalPosition.y + 3;
-        spear->spriteDef = &orange_goblin_spear_sprite;
-        spear->sprite = SPR_addSprite(spear->spriteDef, 0, 0, TILE_ATTR(PAL3, TRUE, FALSE, goblin->flip));
-
-        SPR_setVisibility(spear->sprite, HIDDEN);
-    }
-
-    return spear;
-}
 
 void goblinAI(Goblin_Typedef *goblin)
 {
-    switch (goblin->stateAI)
+    switch (goblin->states.aiState)
     {
-        case AI_GOBLIN_THINK:  goblinAI_Think  (goblin);   break;
-        case AI_GOBLIN_WALK:   goblinAI_Walk   (goblin);   break;
         case AI_GOBLIN_ATTACK: goblinAI_Attack (goblin);   break;
-        case AI_GOBLIN_STAY:   goblinAI_Stay   (goblin);   break;
-        case AI_GOBLIN_DIE:    goblinAI_Die    (goblin);   break;
+        case AI_GOBLIN_DEATH:  goblinAI_Death  (goblin);   break;
         case AI_GOBLIN_TICKS:  goblinAI_Ticks  (goblin);   break;
         case AI_GOBLIN_IDLE:                               break;
     }    
 }
 
-void goblinAI_Think(Goblin_Typedef *goblin)
-{
-    goblin->stateAI = AI_GOBLIN_ATTACK;
-}
-
-void goblinAI_Walk(Goblin_Typedef *goblin)
-{
-    goblin->stateAI = AI_GOBLIN_ATTACK;
-}
-
 void goblinAI_Attack(Goblin_Typedef *goblin)
 {
-    //KDebug_AlertNumber(goblin->attackState);
-
-    switch (goblin->attackState)
+    switch (goblin->states.attackState)
     {
         case GOBLIN_ATTACK_AIM:
             
             if(goblin->localPosition.x > 0 && goblin->localPosition.x < 300)
             {
-                goblin->animState = GOBLIN_ANIM_ATTACK;
-                goblin->attackState = GOBLIN_ATTACK_THROW_SPEAR_START;
+                goblin->states.animState    = GOBLIN_ANIM_ATTACK;
+                goblin->states.attackState  = GOBLIN_ATTACK_SHOOT;
                 KDebug_Alert("GOBLIN THROW SPEAR START");
             }        
 
         break;
 
-        case GOBLIN_ATTACK_THROW_SPEAR_START:
+        case GOBLIN_ATTACK_SHOOT:
 
             if(goblin->sprite->frameInd == 5)
             {
-                KDebug_Alert("GOBLIN CREATE THROW");
-
-                //SPR_setAnimAndFrame(goblin->sprite, GOBLIN_ANIM_WALK, 0);
-                //SPR_setAnimationLoop(goblin->sprite, false);
-                //SPR_setAutoAnimation(goblin->sprite, false);
-                //SPR_setFrame(goblin->sprite, 6);
-                goblin->animState = GOBLIN_ANIM_STAY;
-                goblin->attackState = GOBLIN_ATTACK_THROW_SPEAR_PROCESSING;
+               KDebug_Alert("GOBLIN CREATE SPEAR");
+               goblin->createSpear(goblin);
+               goblin->states.animState     = GOBLIN_ANIM_STAY;
+               goblin->states.attackState   = GOBLIN_ATTACK_RELAX;
             }
-        break;        
-
-        case GOBLIN_ATTACK_THROW_SPEAR_PROCESSING:
-
-            //KDebug_AlertNumber( goblin->spear->globalPosition.x);
-            goblin->spear->globalPosition.x += goblin->spear->step;
-            int16_t spearLocalPositionX = goblin->spear->globalPosition.x - playerCamera.viewZone.left;
-            int16_t spearLocalPositionY = goblin->spear->globalPosition.y - playerCamera.viewZone.top;
-
-            //KDebug_Alert("Attack processing");
-
-            if(spearLocalPositionX < 320 && spearLocalPositionX > 0)    SPR_setVisibility(goblin->spear->sprite, VISIBLE);
-            else                                                        SPR_setVisibility(goblin->spear->sprite, HIDDEN);
-
-            if(spearLocalPositionX < -32  || spearLocalPositionX > 320)
-            {
-                goblin->attackState = GOBLIN_ATTACK_THROW_SPEAR_END;
-                KDebug_Alert("GOBLIN SPEAR INCORRECT POSITION-32 or > 320");
-            }
-            SPR_setPosition(goblin->spear->sprite, spearLocalPositionX, spearLocalPositionY); 
-
-        break;          
-
-        case GOBLIN_ATTACK_THROW_SPEAR_END:
-
-            KDebug_Alert("GOBLIN DELETE THROW");
-            goblinDeleteSpear(goblin);
-            //SPR_setAnim(goblin->sprite, GOBLIN_ANIM_WALK);
-//            SPR_setAnimAndFrame(goblin->sprite, GOBLIN_ANIM_WALK, 0);
-            //SPR_setAutoAnimation(goblin->sprite, true);
-            //SPR_setAnimationLoop(goblin->sprite, true);
-            if(goblin->isDead)
-            {
-               goblin->stateAI      = AI_GOBLIN_IDLE;
-               goblin->attackState  = GOBLIN_ATTACK_IDLE;
-            }
-            goblin->attackState = GOBLIN_ATTACK_AIM;
-            //goblin->stateAI = AI_GOBLIN_WALK;
-
-        break;           
+                 
+        break; 
 
         case GOBLIN_ATTACK_RELAX:
 
-            //goblin->attackState = GOBLIN_ATTACK_AIM;
-            //goblin->stateAI = GOBLIN_TICKS;
+            goblin->states.aiState     = AI_GOBLIN_TICKS;
 
-        break;       
-        
-        case GOBLIN_ATTACK_IDLE:
+        break;           
+
+        case GOBLIN_ATTACK_IDLE:       break;
+
+    }
+}
+
+void goblinAI_Death(Goblin_Typedef *goblin)
+{
+    switch(goblin->states.deathState)
+    {
+        case GOBLIN_DEATH_START:
+
+            goblin->states.deathState   = GOBLIN_DEATH_END;
+            goblin->states.animState    = GOBLIN_ANIM_DEATH;
+            goblin->states.aiState      = AI_GOBLIN_IDLE;
 
         break;
 
+        case GOBLIN_DEATH_END:
+
+        /*
+            if(SPR_isAnimationDone(goblin->sprite))
+            {
+                SPR_setAnimationLoop(goblin->sprite, false);
+            }        
+        */
+
+
+        break;        
+
     }
-}
-
-void goblinAI_Stay(Goblin_Typedef *goblin)
-{
 
 
-}
-
-void goblinAI_Die(Goblin_Typedef *goblin)
-{
-    if(SPR_isAnimationDone(goblin->sprite))
-    {
-        SPR_setAnimationLoop(goblin->sprite, false);
-        goblin->stateAI = AI_GOBLIN_IDLE;
-        //while(1)    ;
-    }
 }
 
 void goblinAI_Ticks(Goblin_Typedef *goblin)
@@ -241,8 +180,9 @@ void goblinAI_Ticks(Goblin_Typedef *goblin)
     goblin->thinkTicksCnt--;
     if(goblin->thinkTicksCnt == 0) 
     {
-        goblin->thinkTicksCnt = goblin->thinkTicks;
-        goblin->stateAI = AI_GOBLIN_ATTACK;
+        goblin->thinkTicksCnt       = goblin->thinkTicks;
+        goblin->states.aiState      = AI_GOBLIN_ATTACK;
+        goblin->states.attackState  = GOBLIN_ATTACK_AIM;
     }
 }
 

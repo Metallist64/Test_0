@@ -68,8 +68,8 @@ void playerDamage(Player_Typedef *player,  EnemyList_Typedef *enemyList)
                 goblinList->list[goblinIdx].health--;
                 if(goblinList->list[goblinIdx].health == 0)
                 {
-                    goblinList->list[goblinIdx].isDead      = true;
-                    goblinList->list[goblinIdx].animState   = GOBLIN_ANIM_DEATH;
+                    goblinList->list[goblinIdx].isDead    = true;
+                    goblinList->list[goblinIdx].states.aiState  = AI_GOBLIN_DEATH;
                 }
             }
         }

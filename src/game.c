@@ -22,11 +22,14 @@ void gameProcessing(void)
     playerAttack();
     updateCamera();
     playerDraw();
+
+
     enemy.AI    (&enemyListLevel_0);
     enemy.draw  (&enemyListLevel_0);
 
-    //projecttiles.checkCollisions();
-    projecttiles.draw();
+    projectiles.handlesProcessing();
+
+
     //projectilesDraw();
     //projectilesDraw();
 }

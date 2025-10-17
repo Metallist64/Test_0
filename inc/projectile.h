@@ -6,41 +6,38 @@
 #ifndef PROJECTILE_H
 #define PROJECTILE_H
 
-#define MAX_SPEARS  8
+#define MAX_PROJECTILES 8
+#define SPEAR_Y_OFFSET  3
 
 typedef struct _projectile
 {
     const SpriteDefinition      *spriteDef;         // RawSprite reference
     Sprite                      *sprite;            // Engine Sprite reference
+    int16_t                     velocityData[2];    // For Forward and Backward dierctions
     int16_t                     velocity;
     Vec2_Typedef                globalPosition;
     Vec2_Typedef                screenPosition;
     RECT_Typedef                collisionRect;
     uint16_t                    flip;
-    struct _projectile_spear    *next;
     void                        (*handler)(struct _projectile*);
 } Projectile_Typedef;
 
-typedef struct _projectile_queue
+typedef struct _projectiles
 {
-    Projectile_Typedef  projectile[8];
-    uint16_t            num;
+    Projectile_Typedef  items[MAX_PROJECTILES];
 
-}ProjectileQueue_Typedef;
+    void    (*handlesProcessing)  (void);
 
+}Projectiles_Typedef;
 
-typedef struct _rojectiles
-{
-    ProjectileQueue_Typedef  spears;      
+extern Projectiles_Typedef    projectiles; 
 
-    void    (*checkCollisions)  (ProjectileQueue_Typedef*);
-    void    (*draw)             (ProjectileQueue_Typedef*);
+uint16_t    createProjectileSpear   (Goblin_Typedef *goblin);
 
-}ProjectilesQueue_Typedef;
+void    handlesProcessing       (void);
+void    deleteProjectile        (Projectile_Typedef *projectile);
+void    addProjectileSpearInfo  (Goblin_Typedef *goblin, Projectile_Typedef *spear);
 
-
-
-
-void projectilesDraw(void);
+void spearHandler   (Projectile_Typedef *spear);
 
 #endif
